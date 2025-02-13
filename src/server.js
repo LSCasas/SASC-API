@@ -6,6 +6,7 @@ const campusRouter = require("./routes/campus.router");
 const teacherRouter = require("./routes/teacher.router");
 const classRouter = require("./routes/class.router");
 const tutorRouter = require("./routes/tutor.router");
+const studentRouter = require("./routes/student.router");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use("/campus", campusRouter);
 app.use("/teacher", teacherRouter);
 app.use("/class", classRouter);
 app.use("/tutor", tutorRouter);
+app.use("/student", studentRouter);
 
 app.get("/", (req, res) => {
   res.json({
