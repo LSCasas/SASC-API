@@ -8,6 +8,7 @@ const classRouter = require("./routes/class.router");
 const tutorRouter = require("./routes/tutor.router");
 const studentRouter = require("./routes/student.router");
 const instrumentRouter = require("./routes/instrument.router");
+const transferRouter = require("./routes/transfer.router");
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/class", classRouter);
 app.use("/tutor", tutorRouter);
 app.use("/student", studentRouter);
 app.use("/instrument", instrumentRouter);
+app.use("/transfer", transferRouter);
 
 app.get("/", (req, res) => {
   res.json({

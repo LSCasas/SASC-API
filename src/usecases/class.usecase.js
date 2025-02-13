@@ -1,4 +1,5 @@
 const Class = require("../models/class.model");
+const Teacher = require("../models/teacher.model"); // Importar el modelo de Teacher
 const createError = require("http-errors");
 
 // Create a new class
@@ -10,6 +11,13 @@ const createClass = async ({
   generation,
 }) => {
   try {
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) throw createError(404, "Teacher not found");
+
+    if (teacher.campusId.toString() !== campusId.toString()) {
+      throw createError(400, "Teacher cannot teach in a different campus");
+    }
+
     const newClass = new Class({
       name,
       schedule,
@@ -54,6 +62,14 @@ const updateClass = async (id, updateData) => {
       new: true,
       runValidators: true,
     });
+
+    const teacher = await Teacher.findById(updateData.teacherId);
+    if (!teacher) throw createError(404, "Teacher not found");
+
+    if (teacher.campusId.toString() !== updateData.campusId.toString()) {
+      throw createError(400, "Teacher cannot teach in a different campus");
+    }
+
     if (!updatedClass) throw createError(404, "Class not found");
     return updatedClass;
   } catch (error) {
