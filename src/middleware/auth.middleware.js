@@ -1,5 +1,5 @@
 const createError = require("http-errors");
-const userUseCase = require("../usecases/admin.usecase");
+const userUseCase = require("../usecases/user.usecase");
 const jwt = require("../lib/jwt");
 
 async function auth(req, res, next) {
@@ -10,7 +10,7 @@ async function auth(req, res, next) {
     }
 
     const payload = jwt.verify(token);
-    const user = await userUseCase.getAdminById(payload.id);
+    const user = await userUseCase.getUserById(payload.id);
 
     req.user = user;
     next();
