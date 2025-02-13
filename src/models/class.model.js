@@ -13,7 +13,7 @@ const classSchema = new mongoose.Schema({
     ref: "Campus",
     required: true,
   },
-  generation: { type: String, required: true }, // Nuevo campo 'generation'
+  generation: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
