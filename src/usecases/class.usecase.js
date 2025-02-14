@@ -55,6 +55,23 @@ const getClassById = async (id) => {
   }
 };
 
+// Get classes by campus ID
+const getClassesByCampusId = async (campusId) => {
+  try {
+    const classes = await Class.find({ campusId })
+      .populate("teacherId")
+      .populate("campusId");
+    if (!classes.length)
+      throw createError(404, "No classes found for this campus");
+    return classes;
+  } catch (error) {
+    throw createError(
+      500,
+      "Error fetching classes by campus: " + error.message
+    );
+  }
+};
+
 // Update a class by ID
 const updateClass = async (id, updateData) => {
   try {
@@ -92,6 +109,7 @@ module.exports = {
   createClass,
   getAllClasses,
   getClassById,
+  getClassesByCampusId,
   updateClass,
   deleteClass,
 };

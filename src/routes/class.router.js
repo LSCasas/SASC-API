@@ -7,6 +7,7 @@ const {
   getClassById,
   updateClass,
   deleteClass,
+  getClassesByCampusId,
 } = require("../usecases/class.usecase");
 
 // Create a new class
@@ -61,6 +62,24 @@ router.get("/:id", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching class by ID:", error);
+    res.status(error.status || 500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+//Get classes by campus ID
+router.get("/campus/:campusId", authMiddleware, async (req, res) => {
+  try {
+    const campusId = req.params.campusId;
+    const classes = await getClassesByCampusId(campusId);
+    res.json({
+      success: true,
+      data: classes,
+    });
+  } catch (error) {
+    console.error("Error fetching classes by campus ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const User = require("../models/user.model");
 const Campus = require("../models/campus.model"); // Asegúrate de tener el modelo de Campus
 const createError = require("http-errors");
