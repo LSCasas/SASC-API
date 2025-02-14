@@ -1,4 +1,5 @@
 const Student = require("../models/student.model");
+const Tutor = require("../models/tutor.model");
 const createError = require("http-errors");
 
 // Create a student
@@ -9,8 +10,31 @@ const createStudent = async (data) => {
       throw createError(409, "CURP already exists");
     }
 
-    const newStudent = new Student(data);
+    let tutorId;
+
+    if (data.tutorId) {
+      tutorId = data.tutorId;
+    } else {
+      let tutor = await Tutor.findOne({ curp: data.tutorCurp });
+      if (!tutor) {
+        tutor = new Tutor({
+          name: data.tutorName,
+          lastname: data.tutorLastname,
+          curp: data.tutorCurp,
+          phone: data.tutorPhone,
+          campusId: data.campusId,
+        });
+        await tutor.save();
+      }
+      tutorId = tutor._id;
+    }
+
+    const newStudent = new Student({
+      ...data,
+      tutorId,
+    });
     await newStudent.save();
+
     return newStudent;
   } catch (error) {
     console.error("Error creating student:", error);
@@ -37,6 +61,23 @@ const getStudentById = async (id) => {
     return student;
   } catch (error) {
     throw createError(500, "Error fetching student: " + error.message);
+  }
+};
+
+// Get students by campus ID
+const getStudentsByCampusId = async (campusId) => {
+  try {
+    const students = await Student.find({ campusId }).populate(
+      "tutorId campusId ClassId"
+    );
+    if (!students.length)
+      throw createError(404, "No students found for this campus");
+    return students;
+  } catch (error) {
+    throw createError(
+      500,
+      "Error fetching students by campus: " + error.message
+    );
   }
 };
 
@@ -69,6 +110,7 @@ module.exports = {
   createStudent,
   getAllStudents,
   getStudentById,
+  getStudentsByCampusId,
   updateStudent,
   deleteStudent,
 };

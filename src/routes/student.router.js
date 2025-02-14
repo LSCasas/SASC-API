@@ -5,6 +5,7 @@ const {
   createStudent,
   getAllStudents,
   getStudentById,
+  getStudentsByCampusId,
   updateStudent,
   deleteStudent,
 } = require("../usecases/student.usecase");
@@ -54,6 +55,24 @@ router.get("/:id", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching student by ID:", error);
+    res.status(error.status || 500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// Get students by campus ID
+router.get("/campus/:campusId", authMiddleware, async (req, res) => {
+  try {
+    const campusId = req.params.campusId;
+    const students = await getStudentsByCampusId(campusId);
+    res.json({
+      success: true,
+      data: students,
+    });
+  } catch (error) {
+    console.error("Error fetching students by campus ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
