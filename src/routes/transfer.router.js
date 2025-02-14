@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/auth.middleware");
 const {
   createTransfer,
   getAllTransfers,
@@ -9,7 +10,7 @@ const {
 } = require("../usecases/transfer.usecase");
 
 // Create a new transfer
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const newTransfer = await createTransfer(req.body);
     res.status(201).json({
@@ -26,7 +27,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all transfers
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const transfers = await getAllTransfers();
     res.json({
@@ -43,7 +44,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get a transfer by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const transferId = req.params.id;
     const transfer = await getTransferById(transferId);
@@ -61,7 +62,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update a transfer by ID
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const transferId = req.params.id;
     const updatedTransfer = await updateTransfer(transferId, req.body);
@@ -79,7 +80,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // Delete a transfer by ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const transferId = req.params.id;
     await deleteTransfer(transferId);
