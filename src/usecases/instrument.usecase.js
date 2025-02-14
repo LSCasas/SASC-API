@@ -49,6 +49,23 @@ const getInstrumentById = async (id) => {
   }
 };
 
+// Get instruments by campus ID
+const getInstrumentsByCampusId = async (campusId) => {
+  try {
+    const instruments = await Instrument.find({ campusId }).populate(
+      "studentId tutorId campusId"
+    );
+    if (!instruments.length)
+      throw createError(404, "No instruments found for this campus");
+    return instruments;
+  } catch (error) {
+    throw createError(
+      500,
+      "Error fetching instruments by campus: " + error.message
+    );
+  }
+};
+
 // Update an instrument by ID
 const updateInstrument = async (id, updateData) => {
   try {
@@ -91,6 +108,7 @@ module.exports = {
   createInstrument,
   getAllInstruments,
   getInstrumentById,
+  getInstrumentsByCampusId,
   updateInstrument,
   deleteInstrument,
 };

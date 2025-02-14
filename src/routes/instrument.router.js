@@ -5,6 +5,7 @@ const {
   createInstrument,
   getAllInstruments,
   getInstrumentById,
+  getInstrumentsByCampusId,
   updateInstrument,
   deleteInstrument,
 } = require("../usecases/instrument.usecase");
@@ -54,6 +55,24 @@ router.get("/:id", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching instrument by ID:", error);
+    res.status(error.status || 500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// Get instruments by campus ID
+router.get("/campus/:campusId", authMiddleware, async (req, res) => {
+  try {
+    const campusId = req.params.campusId;
+    const instruments = await getInstrumentsByCampusId(campusId);
+    res.json({
+      success: true,
+      data: instruments,
+    });
+  } catch (error) {
+    console.error("Error fetching instruments by campus ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
