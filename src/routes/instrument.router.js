@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/auth.middleware");
 const {
   createInstrument,
   getAllInstruments,
@@ -9,7 +10,7 @@ const {
 } = require("../usecases/instrument.usecase");
 
 // Create a new instrument
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const newInstrument = await createInstrument(req.body);
     res.status(201).json({
@@ -26,7 +27,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all instruments
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const instruments = await getAllInstruments();
     res.json({
@@ -43,7 +44,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get an instrument by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const instrumentId = req.params.id;
     const instrument = await getInstrumentById(instrumentId);
@@ -61,7 +62,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update an instrument by ID
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const instrumentId = req.params.id;
     const updatedInstrument = await updateInstrument(instrumentId, req.body);
@@ -79,7 +80,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // Delete an instrument by ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const instrumentId = req.params.id;
     await deleteInstrument(instrumentId);
