@@ -10,7 +10,7 @@ const {
 } = require("../usecases/campus.usecase");
 
 // Create a new campus
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const { name, address, contactPhone } = req.body;
     const newCampus = await createCampus({ name, address, contactPhone });

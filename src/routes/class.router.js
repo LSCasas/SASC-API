@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/auth.middleware");
 const {
   createClass,
   getAllClasses,
@@ -9,7 +10,7 @@ const {
 } = require("../usecases/class.usecase");
 
 // Create a new class
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const { name, schedule, teacherId, campusId, generation } = req.body;
     const newClass = await createClass({
@@ -33,7 +34,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all classes
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const classes = await getAllClasses();
     res.json({
@@ -50,7 +51,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get a class by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const classId = req.params.id;
     const classData = await getClassById(classId);
@@ -68,7 +69,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update a class by ID
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const classId = req.params.id;
     const { name, schedule, teacherId, campusId, generation } = req.body;
@@ -93,7 +94,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // Delete a class by ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const classId = req.params.id;
     await deleteClass(classId);
