@@ -7,10 +7,11 @@ const {
   getUserById,
   updateUser,
   deleteUser,
+  getCampusesByCoordinator,
 } = require("../usecases/user.usecase");
 
 // Create a new user
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const { firstName, lastName, email, password, phone, role, campusId } =
       req.body;
@@ -21,7 +22,7 @@ router.post("/", async (req, res) => {
       password,
       phone,
       role,
-      campusId, // Ahora lo pasamos correctamente
+      campusId,
     });
     res.status(201).json({
       success: true,
@@ -32,6 +33,20 @@ router.post("/", async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Error creating user",
+    });
+  }
+});
+
+// Get campus by coordinator
+router.get("/my-campuses", authMiddleware, async (req, res) => {
+  try {
+    const campuses = await getCampusesByCoordinator(req.user.id);
+    res.json({ success: true, data: campuses });
+  } catch (error) {
+    console.error("Error fetching campuses:", error);
+    res.status(error.status || 500).json({
+      success: false,
+      error: error.message,
     });
   }
 });
@@ -72,10 +87,12 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 // Update a user by ID
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const userId = req.params.id;
-    const { firstName, lastName, email, password, phone, role } = req.body;
+    const { firstName, lastName, email, password, phone, role, campusId } =
+      req.body;
+
     const updatedUser = await updateUser(userId, {
       firstName,
       lastName,
@@ -83,7 +100,9 @@ router.patch("/:id", async (req, res) => {
       password,
       phone,
       role,
+      campusId,
     });
+
     res.json({
       success: true,
       data: updatedUser,

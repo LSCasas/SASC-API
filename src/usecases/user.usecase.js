@@ -11,7 +11,7 @@ const createUser = async ({
   password,
   phone,
   role,
-  campusId,
+  campusId = [],
 }) => {
   try {
     const userFound = await User.findOne({ email });
@@ -38,8 +38,10 @@ const createUser = async ({
     if (role === "admin") {
       const campuses = await Campus.find();
       newUserData.campusId = campuses.map((campus) => campus._id);
-    } else if (campusId && Array.isArray(campusId)) {
-      newUserData.campusId = campusId;
+    } else if (Array.isArray(campusId) && campusId.length > 0) {
+      newUserData.campusId = campusId.map(
+        (id) => new mongoose.Types.ObjectId(id)
+      );
     }
 
     const newUser = new User(newUserData);
@@ -48,6 +50,17 @@ const createUser = async ({
   } catch (error) {
     console.error("Error creating user:", error);
     throw createError(500, "Error creating user: " + error.message);
+  }
+};
+
+//Get campuses by coordinator
+const getCampusesByCoordinator = async (userId) => {
+  try {
+    const user = await User.findById(userId).populate("campusId");
+    if (!user) throw createError(404, "User not found");
+    return user.campusId;
+  } catch (error) {
+    throw createError(500, "Error fetching campuses: " + error.message);
   }
 };
 
@@ -77,10 +90,46 @@ const updateUser = async (id, updateData) => {
     if (updateData.password) {
       updateData.password = await encrypt.encrypt(updateData.password);
     }
+
+    // Obtener usuario actual
+    const user = await User.findById(id);
+    if (!user) throw createError(404, "User not found");
+
+    if (updateData.campusId) {
+      if (!Array.isArray(updateData.campusId)) {
+        throw createError(400, "campusId must be an array");
+      }
+
+      let currentCampuses = user.campusId.map((campus) => campus.toString());
+      let newCampuses = updateData.campusId.map((id) => id.toString());
+
+      if (newCampuses.length === 0) {
+        // Si el array está vacío, eliminar todas las sedes
+        updateData.campusId = [];
+      } else {
+        // Filtrar campus a eliminar (los que comienzan con "-")
+        const campusesToRemove = newCampuses
+          .filter((id) => id.startsWith("-"))
+          .map((id) => id.substring(1));
+
+        // Mantener solo los campus que no estén en la lista de eliminación
+        currentCampuses = currentCampuses.filter(
+          (campus) => !campusesToRemove.includes(campus)
+        );
+
+        // Agregar los nuevos campus que no sean de eliminación
+        const campusesToAdd = newCampuses.filter((id) => !id.startsWith("-"));
+        updateData.campusId = [
+          ...new Set([...currentCampuses, ...campusesToAdd]),
+        ];
+      }
+    }
+
     const updatedUser = await User.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
     });
+
     if (!updatedUser) throw createError(404, "User not found");
     return updatedUser;
   } catch (error) {
@@ -105,4 +154,5 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  getCampusesByCoordinator,
 };

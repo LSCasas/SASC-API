@@ -18,9 +18,6 @@ const userSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Campus",
-      required: function () {
-        return this.role === "admin";
-      },
     },
   ],
   createdAt: { type: Date, default: Date.now },
