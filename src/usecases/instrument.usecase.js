@@ -20,6 +20,12 @@ const createInstrument = async (data) => {
 
     const newInstrument = new Instrument(data);
     await newInstrument.save();
+
+    // Actualizar hasInstrument en Student
+    if (data.studentId) {
+      await Student.updateHasInstrument(data.studentId);
+    }
+
     return newInstrument;
   } catch (error) {
     console.error("Error creating instrument:", error);
@@ -69,6 +75,9 @@ const getInstrumentsByCampusId = async (campusId) => {
 // Update an instrument by ID
 const updateInstrument = async (id, updateData) => {
   try {
+    const instrument = await Instrument.findById(id);
+    if (!instrument) throw createError(404, "Instrument not found");
+
     if (updateData.studentId) {
       const existingInstrument = await Instrument.findOne({
         studentId: updateData.studentId,
@@ -81,12 +90,15 @@ const updateInstrument = async (id, updateData) => {
     const updatedInstrument = await Instrument.findByIdAndUpdate(
       id,
       updateData,
-      {
-        new: true,
-        runValidators: true,
-      }
+      { new: true, runValidators: true }
     );
-    if (!updatedInstrument) throw createError(404, "Instrument not found");
+
+    // Actualizar hasInstrument en los estudiantes afectados
+    if (instrument.studentId)
+      await Student.updateHasInstrument(instrument.studentId);
+    if (updateData.studentId)
+      await Student.updateHasInstrument(updateData.studentId);
+
     return updatedInstrument;
   } catch (error) {
     throw createError(500, "Error updating instrument: " + error.message);
@@ -98,6 +110,12 @@ const deleteInstrument = async (id) => {
   try {
     const instrument = await Instrument.findByIdAndDelete(id);
     if (!instrument) throw createError(404, "Instrument not found");
+
+    // Actualizar hasInstrument en el estudiante afectado
+    if (instrument.studentId) {
+      await Student.updateHasInstrument(instrument.studentId);
+    }
+
     return instrument;
   } catch (error) {
     throw createError(500, "Error deleting instrument: " + error.message);
