@@ -1,11 +1,22 @@
 const Campus = require("../models/campus.model");
+const User = require("../models/user.model");
 const createError = require("http-errors");
 
 // Create a new campus
-const createCampus = async ({ name, address, contactPhone, coordinator }) => {
+const createCampus = async ({ name, address, contactPhone }) => {
   try {
-    const newCampus = new Campus({ name, address, contactPhone, coordinator });
+    const newCampus = new Campus({ name, address, contactPhone });
     await newCampus.save();
+
+    const admins = await User.find({ role: "admin" });
+
+    for (let admin of admins) {
+      if (!admin.campusId.includes(newCampus._id)) {
+        admin.campusId.push(newCampus._id);
+        await admin.save();
+      }
+    }
+
     return newCampus;
   } catch (error) {
     console.error("Error creating campus:", error);

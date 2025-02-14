@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const Campus = require("../models/campus.model"); // Asegúrate de tener el modelo de Campus
 const createError = require("http-errors");
 const encrypt = require("../lib/encrypt");
 
@@ -10,6 +11,7 @@ const createUser = async ({
   password,
   phone,
   role,
+  campusId,
 }) => {
   try {
     const userFound = await User.findOne({ email });
@@ -23,14 +25,24 @@ const createUser = async ({
 
     password = await encrypt.encrypt(password);
 
-    const newUser = new User({
+    const newUserData = {
       firstName,
       lastName,
       email,
       password,
       phone,
       role,
-    });
+      campusId: [],
+    };
+
+    if (role === "admin") {
+      const campuses = await Campus.find();
+      newUserData.campusId = campuses.map((campus) => campus._id);
+    } else if (campusId && Array.isArray(campusId)) {
+      newUserData.campusId = campusId;
+    }
+
+    const newUser = new User(newUserData);
     await newUser.save();
     return newUser;
   } catch (error) {
@@ -42,7 +54,7 @@ const createUser = async ({
 // Get all users
 const getAllUsers = async () => {
   try {
-    return await User.find();
+    return await User.find().populate("campusId");
   } catch (error) {
     throw createError(500, "Error fetching users: " + error.message);
   }
@@ -51,7 +63,7 @@ const getAllUsers = async () => {
 // Get a user by ID
 const getUserById = async (id) => {
   try {
-    const user = await User.findById(id);
+    const user = await User.findById(id).populate("campusId");
     if (!user) throw createError(404, "User not found");
     return user;
   } catch (error) {

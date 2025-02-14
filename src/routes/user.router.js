@@ -10,9 +10,10 @@ const {
 } = require("../usecases/user.usecase");
 
 // Create a new user
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const { firstName, lastName, email, password, phone, role } = req.body;
+    const { firstName, lastName, email, password, phone, role, campusId } =
+      req.body;
     const newUser = await createUser({
       firstName,
       lastName,
@@ -20,6 +21,7 @@ router.post("/", authMiddleware, async (req, res) => {
       password,
       phone,
       role,
+      campusId, // Ahora lo pasamos correctamente
     });
     res.status(201).json({
       success: true,
@@ -70,7 +72,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 // Update a user by ID
-router.patch("/:id", authMiddleware, async (req, res) => {
+router.patch("/:id", async (req, res) => {
   try {
     const userId = req.params.id;
     const { firstName, lastName, email, password, phone, role } = req.body;

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/auth.middleware");
 const {
   createCampus,
   getAllCampuses,
@@ -11,13 +12,8 @@ const {
 // Create a new campus
 router.post("/", async (req, res) => {
   try {
-    const { name, address, contactPhone, coordinator } = req.body;
-    const newCampus = await createCampus({
-      name,
-      address,
-      contactPhone,
-      coordinator,
-    });
+    const { name, address, contactPhone } = req.body;
+    const newCampus = await createCampus({ name, address, contactPhone });
     res.status(201).json({
       success: true,
       data: newCampus,
@@ -32,7 +28,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all campuses
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const campuses = await getAllCampuses();
     res.json({
@@ -49,7 +45,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get a campus by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const campusId = req.params.id;
     const campus = await getCampusById(campusId);
@@ -67,15 +63,14 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update a campus by ID
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const campusId = req.params.id;
-    const { name, address, contactPhone, coordinator } = req.body;
+    const { name, address, contactPhone } = req.body;
     const updatedCampus = await updateCampus(campusId, {
       name,
       address,
       contactPhone,
-      coordinator,
     });
     res.json({
       success: true,
@@ -91,7 +86,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // Delete a campus by ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const campusId = req.params.id;
     await deleteCampus(campusId);

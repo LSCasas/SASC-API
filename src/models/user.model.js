@@ -14,6 +14,15 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   phone: { type: String },
   role: { type: String, required: true, enum: ["admin", "coordinator"] },
+  campusId: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Campus",
+      required: function () {
+        return this.role === "admin";
+      },
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
