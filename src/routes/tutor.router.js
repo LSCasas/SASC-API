@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/auth.middleware");
 const {
   createTutor,
   getAllTutors,
@@ -9,7 +10,7 @@ const {
 } = require("../usecases/tutor.usecase");
 
 // Create a new tutor
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const { name, lastname, curp, phone, campusId } = req.body;
     const newTutor = await createTutor({
@@ -33,7 +34,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all tutors
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const tutors = await getAllTutors();
     res.json({
@@ -50,7 +51,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get a tutor by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const tutorId = req.params.id;
     const tutor = await getTutorById(tutorId);
@@ -68,7 +69,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update a tutor by ID
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const tutorId = req.params.id;
     const { name, lastname, curp, phone, campusId } = req.body;
@@ -93,7 +94,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // Delete a tutor by ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const tutorId = req.params.id;
     await deleteTutor(tutorId);
