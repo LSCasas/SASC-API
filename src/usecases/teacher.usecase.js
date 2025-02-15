@@ -50,6 +50,21 @@ const getTeacherById = async (id) => {
   }
 };
 
+// Get teachers by campus ID
+const getTeachersByCampusId = async (campusId) => {
+  try {
+    const teachers = await Teacher.find({ campusId }).populate("campusId");
+    if (!teachers.length)
+      throw createError(404, "No teachers found for this campus");
+    return teachers;
+  } catch (error) {
+    throw createError(
+      500,
+      "Error fetching teachers by campus: " + error.message
+    );
+  }
+};
+
 // Update a teacher by ID
 const updateTeacher = async (id, updateData) => {
   try {
@@ -79,6 +94,7 @@ module.exports = {
   createTeacher,
   getAllTeachers,
   getTeacherById,
+  getTeachersByCampusId,
   updateTeacher,
   deleteTeacher,
 };

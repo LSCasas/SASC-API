@@ -68,6 +68,24 @@ router.get("/:id", authMiddleware, async (req, res) => {
   }
 });
 
+// Get a teacher by campus ID
+router.get("/campus/:campusId", authMiddleware, async (req, res) => {
+  try {
+    const campusId = req.params.campusId;
+    const teachers = await getTeachersByCampusId(campusId);
+    res.json({
+      success: true,
+      data: teachers,
+    });
+  } catch (error) {
+    console.error("Error fetching teachers by campus ID:", error);
+    res.status(error.status || 500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
 // Update a teacher by ID
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
