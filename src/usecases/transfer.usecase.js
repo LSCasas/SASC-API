@@ -96,6 +96,30 @@ const getTransferById = async (id) => {
   }
 };
 
+// Get transfers by campus ID
+const getTransfersByCampusId = async (campusId) => {
+  try {
+    const transfers = await Transfer.find({
+      $or: [
+        { originLocationId: campusId },
+        { destinationLocationId: campusId },
+      ],
+    }).populate(
+      "studentId originLocationId destinationLocationId originClass destinationClass"
+    );
+
+    if (!transfers.length)
+      throw createError(404, "No transfers found for this campus");
+
+    return transfers;
+  } catch (error) {
+    throw createError(
+      500,
+      "Error fetching transfers by campus: " + error.message
+    );
+  }
+};
+
 // Update a transfer by ID
 const updateTransfer = async (id, updateData) => {
   try {
@@ -125,6 +149,7 @@ module.exports = {
   createTransfer,
   getAllTransfers,
   getTransferById,
+  getTransfersByCampusId,
   updateTransfer,
   deleteTransfer,
 };

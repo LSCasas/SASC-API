@@ -5,6 +5,7 @@ const {
   createTransfer,
   getAllTransfers,
   getTransferById,
+  getTransfersByCampusId,
   updateTransfer,
   deleteTransfer,
 } = require("../usecases/transfer.usecase");
@@ -54,6 +55,24 @@ router.get("/:id", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching transfer by ID:", error);
+    res.status(error.status || 500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// Get a transfer by campus ID
+router.get("/campus/:campusId", authMiddleware, async (req, res) => {
+  try {
+    const campusId = req.params.campusId;
+    const transfers = await getTransfersByCampusId(campusId);
+    res.json({
+      success: true,
+      data: transfers,
+    });
+  } catch (error) {
+    console.error("Error fetching transfers by campus ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,

@@ -5,6 +5,7 @@ const {
   createTeacher,
   getAllTeachers,
   getTeacherById,
+  getTeachersByCampusId,
   updateTeacher,
   deleteTeacher,
 } = require("../usecases/teacher.usecase");
