@@ -14,17 +14,17 @@ const studentSchema = new mongoose.Schema({
     ref: "Campus",
     required: true,
   },
-  status: { type: String },
-  gender: { type: String },
+  status: { type: String, default: "active" },
+  gender: { type: String, required: true },
   ClassId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Class",
     required: true,
   },
-  medicalConditions: { type: String },
-  specialNeeds: { type: String },
-  requiredDocuments: { type: String },
-  hasInstrument: { type: Boolean, default: false }, // Se actualizará dinámicamente
+  medicalConditions: { type: String, default: null },
+  specialNeeds: { type: String, default: null },
+  requiredDocuments: { type: String, required: true },
+  hasInstrument: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
