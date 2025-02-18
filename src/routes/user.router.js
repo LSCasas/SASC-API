@@ -15,6 +15,8 @@ router.post("/", authMiddleware, async (req, res) => {
   try {
     const { firstName, lastName, email, password, phone, role, campusId } =
       req.body;
+    const createdBy = req.user.id;
+
     const newUser = await createUser({
       firstName,
       lastName,
@@ -23,7 +25,9 @@ router.post("/", authMiddleware, async (req, res) => {
       phone,
       role,
       campusId,
+      createdBy,
     });
+
     res.status(201).json({
       success: true,
       data: newUser,
@@ -89,30 +93,12 @@ router.get("/:id", authMiddleware, async (req, res) => {
 // Update a user by ID
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
-    const userId = req.params.id;
-    const { firstName, lastName, email, password, phone, role, campusId } =
-      req.body;
-
-    const updatedUser = await updateUser(userId, {
-      firstName,
-      lastName,
-      email,
-      password,
-      phone,
-      role,
-      campusId,
-    });
-
-    res.json({
-      success: true,
-      data: updatedUser,
-    });
+    const updatedUser = await updateUser(req.params.id, req.body, req.user.id);
+    res.json({ success: true, data: updatedUser });
   } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
+    res
+      .status(error.status || 500)
+      .json({ success: false, error: error.message });
   }
 });
 

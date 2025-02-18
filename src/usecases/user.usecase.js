@@ -13,6 +13,7 @@ const createUser = async ({
   phone,
   role,
   campusId = [],
+  createdBy,
 }) => {
   try {
     const userFound = await User.findOne({ email });
@@ -34,6 +35,7 @@ const createUser = async ({
       phone,
       role,
       campusId: [],
+      createdBy,
     };
 
     if (role === "admin") {
@@ -86,13 +88,12 @@ const getUserById = async (id) => {
 };
 
 // Update a user by ID
-const updateUser = async (id, updateData) => {
+const updateUser = async (id, updateData, updatedBy) => {
   try {
     if (updateData.password) {
       updateData.password = await encrypt.encrypt(updateData.password);
     }
 
-    // Obtener usuario actual
     const user = await User.findById(id);
     if (!user) throw createError(404, "User not found");
 
@@ -105,26 +106,25 @@ const updateUser = async (id, updateData) => {
       let newCampuses = updateData.campusId.map((id) => id.toString());
 
       if (newCampuses.length === 0) {
-        // Si el array está vacío, eliminar todas las sedes
         updateData.campusId = [];
       } else {
-        // Filtrar campus a eliminar (los que comienzan con "-")
         const campusesToRemove = newCampuses
           .filter((id) => id.startsWith("-"))
           .map((id) => id.substring(1));
 
-        // Mantener solo los campus que no estén en la lista de eliminación
         currentCampuses = currentCampuses.filter(
           (campus) => !campusesToRemove.includes(campus)
         );
 
-        // Agregar los nuevos campus que no sean de eliminación
         const campusesToAdd = newCampuses.filter((id) => !id.startsWith("-"));
         updateData.campusId = [
           ...new Set([...currentCampuses, ...campusesToAdd]),
         ];
       }
     }
+
+    updateData.updatedBy = updatedBy;
+    updateData.updatedAt = new Date();
 
     const updatedUser = await User.findByIdAndUpdate(id, updateData, {
       new: true,
