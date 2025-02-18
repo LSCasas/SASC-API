@@ -14,7 +14,7 @@ const studentSchema = new mongoose.Schema({
     ref: "Campus",
     required: true,
   },
-  status: { type: String, default: "active" },
+  status: { type: String, default: "activo" },
   gender: { type: String, required: true },
   ClassId: {
     type: mongoose.Schema.Types.ObjectId,

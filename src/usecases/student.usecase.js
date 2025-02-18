@@ -84,11 +84,21 @@ const getStudentsByCampusId = async (campusId) => {
 // Update a student by ID
 const updateStudent = async (id, updateData) => {
   try {
+    const student = await Student.findById(id);
+    if (!student) throw createError(404, "Student not found");
+
     const updatedStudent = await Student.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
     });
+
     if (!updatedStudent) throw createError(404, "Student not found");
+
+    if (updateData.status) {
+      const isArchived = updateData.status !== "activo";
+      await Tutor.findByIdAndUpdate(student.tutorId, { isArchive: isArchived });
+    }
+
     return updatedStudent;
   } catch (error) {
     throw createError(500, "Error updating student: " + error.message);

@@ -12,6 +12,7 @@ const tutorSchema = new mongoose.Schema({
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  isArchive: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model("Tutor", tutorSchema);
