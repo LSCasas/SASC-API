@@ -14,8 +14,9 @@ async function login(email, password) {
     throw new Error("Correo o contraseña inválida");
   }
 
+  // Crear el token con la información del usuario
   const token = jwt.sign({
-    id: user._id,
+    id: user._id, // Usamos el _id del usuario como userId
     email: user.email,
     campusId: user.campusId,
   });

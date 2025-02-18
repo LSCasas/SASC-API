@@ -13,7 +13,11 @@ const {
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { name, address, contactPhone } = req.body;
-    const newCampus = await createCampus({ name, address, contactPhone });
+    const userId = req.userId;
+    const newCampus = await createCampus(
+      { name, address, contactPhone },
+      userId
+    );
     res.status(201).json({
       success: true,
       data: newCampus,
@@ -67,11 +71,16 @@ router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const campusId = req.params.id;
     const { name, address, contactPhone } = req.body;
-    const updatedCampus = await updateCampus(campusId, {
-      name,
-      address,
-      contactPhone,
-    });
+    const userId = req.userId;
+    const updatedCampus = await updateCampus(
+      campusId,
+      {
+        name,
+        address,
+        contactPhone,
+      },
+      userId
+    );
     res.json({
       success: true,
       data: updatedCampus,
