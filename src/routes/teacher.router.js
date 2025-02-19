@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/auth.middleware");
+const createError = require("http-errors");
 const {
   createTeacher,
   getAllTeachers,
@@ -13,14 +14,15 @@ const {
 // Create a new teacher
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { firstName, lastName, phone, email, campusId } = req.body;
-    const newTeacher = await createTeacher({
-      firstName,
-      lastName,
-      phone,
-      email,
-      campusId,
-    });
+    // Extraer el campusId del token (disponible en req.selectedCampusId)
+    const { selectedCampusId } = req;
+
+    // Asegurarse de que se haya seleccionado una sede
+    if (!selectedCampusId) {
+      throw createError(400, "Campus must be selected");
+    }
+
+    const newTeacher = await createTeacher(req.body, selectedCampusId); // Pasar el campusId desde el token
     res.status(201).json({
       success: true,
       data: newTeacher,

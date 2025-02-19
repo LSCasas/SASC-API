@@ -14,17 +14,40 @@ async function login(email, password) {
     throw new Error("Correo o contraseña inválida");
   }
 
-  // Crear el token con la información del usuario
+  // Crear el token inicial SIN un campus seleccionado
   const token = jwt.sign({
-    id: user._id, // Usamos el _id del usuario como userId
+    id: user._id,
     email: user.email,
-    campusId: user.campusId,
+    campusId: user.campusId.map((campus) => campus._id), // Lista de campus
   });
 
   return {
     token,
-    campuses: user.campusId, // Devolver las sedes asociadas
+    campuses: user.campusId, // Lista de sedes disponibles
   };
 }
 
-module.exports = { login };
+// Función para actualizar el token con la sede seleccionada
+async function updateCampusToken(userId, selectedCampusId) {
+  const user = await User.findById(userId).populate("campusId");
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  if (
+    !user.campusId.some((campus) => campus._id.toString() === selectedCampusId)
+  ) {
+    throw new Error("El usuario no tiene acceso a esta sede");
+  }
+
+  const token = jwt.sign({
+    id: user._id,
+    email: user.email,
+    campusId: user.campusId.map((campus) => campus._id), // Lista de campus
+    selectedCampusId, // Guardamos el campus seleccionado
+  });
+
+  return { token };
+}
+
+module.exports = { login, updateCampusToken };

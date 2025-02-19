@@ -2,26 +2,25 @@ const Teacher = require("../models/teacher.model");
 const createError = require("http-errors");
 
 // Create a new teacher
-const createTeacher = async ({
-  firstName,
-  lastName,
-  phone,
-  email,
-  campusId,
-}) => {
+const createTeacher = async (
+  { firstName, lastName, phone, email },
+  campusIdFromToken
+) => {
   try {
     const teacherFound = await Teacher.findOne({ email });
     if (teacherFound) {
       throw createError(409, "Email already in use");
     }
 
+    // Crear el nuevo maestro con el campusId del token
     const newTeacher = new Teacher({
       firstName,
       lastName,
       phone,
       email,
-      campusId,
+      campusId: campusIdFromToken, // Asignar campusId desde el token
     });
+
     await newTeacher.save();
     return newTeacher;
   } catch (error) {

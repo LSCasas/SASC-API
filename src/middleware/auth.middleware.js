@@ -4,18 +4,19 @@ const jwt = require("../lib/jwt");
 
 async function auth(req, res, next) {
   try {
-    const token = req.headers.authorization?.split(" ")[1]; // Obtener el token en formato "Bearer <token>"
+    const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
       throw createError(401, "JWT is required");
     }
 
-    // Verificar el token y obtener el payload
+    // Verificar el token
     const payload = jwt.verify(token);
-    req.userId = payload.id; // Guardamos el userId extraído del token en req.userId
+    req.userId = payload.id;
+    req.campusId = payload.campusId; // Lista de campus
+    req.selectedCampusId = payload.selectedCampusId || null; // Sede seleccionada
 
-    const user = await userUseCase.getUserById(req.userId); // Usamos el userId para obtener el usuario
-
-    req.user = user; // Guardamos el usuario completo en req.user (si lo necesitas en otras partes del código)
+    const user = await userUseCase.getUserById(req.userId);
+    req.user = user;
 
     next();
   } catch (error) {
