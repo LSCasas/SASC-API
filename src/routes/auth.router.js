@@ -3,15 +3,21 @@ const authUseCase = require("../usecases/auth.usecase");
 const authMiddleware = require("../middleware/auth.middleware");
 const router = express.Router();
 
-// Ruta para iniciar sesión
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const { token, campuses } = await authUseCase.login(email, password);
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 3600 * 1000,
+    });
+
     res.json({
       success: true,
-      data: { token, campuses },
+      data: { campuses },
     });
   } catch (error) {
     res.status(401).json({
@@ -21,25 +27,39 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Ruta para seleccionar un campus y actualizar el token
 router.post("/select-campus", authMiddleware, async (req, res) => {
   try {
     const { selectedCampusId } = req.body;
     const userId = req.userId;
+
+    if (!selectedCampusId) {
+      return res.status(400).json({
+        success: false,
+        message: "El ID del campus es requerido",
+      });
+    }
 
     const { token } = await authUseCase.updateCampusToken(
       userId,
       selectedCampusId
     );
 
-    res.json({
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 3600 * 1000,
+    });
+
+    return res.json({
       success: true,
-      data: { token },
+      message: "Campus seleccionado exitosamente",
     });
   } catch (error) {
-    res.status(400).json({
+    console.error("Error en select-campus:", error);
+    return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Error interno del servidor en select-campus",
     });
   }
 });

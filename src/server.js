@@ -1,6 +1,6 @@
 const cors = require("cors");
 const express = require("express");
-
+const cookieParser = require("cookie-parser");
 const userRouter = require("./routes/user.router");
 const campusRouter = require("./routes/campus.router");
 const teacherRouter = require("./routes/teacher.router");
@@ -13,8 +13,14 @@ const authRouter = require("./routes/auth.router");
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Permite solo el frontend
+    credentials: true, // Permite cookies y headers con credenciales
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/user", userRouter);
 app.use("/campus", campusRouter);

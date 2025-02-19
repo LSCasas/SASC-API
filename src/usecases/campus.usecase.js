@@ -9,13 +9,12 @@ const createCampus = async ({ name, address, contactPhone }, userId) => {
       name,
       address,
       contactPhone,
-      createdBy: userId, // Asignamos el userId al campo createdBy
-      updatedBy: userId, // Asignamos el userId al campo updatedBy
+      createdBy: userId,
+      updatedBy: userId,
     });
 
     await newCampus.save();
 
-    // Asignamos el nuevo campus a los administradores
     const admins = await User.find({ role: "admin" });
     for (let admin of admins) {
       if (!admin.campusId.includes(newCampus._id)) {

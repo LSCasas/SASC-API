@@ -14,7 +14,6 @@ async function login(email, password) {
     throw new Error("Correo o contraseña inválida");
   }
 
-  // Crear el token inicial SIN un campus seleccionado
   const token = jwt.sign({
     id: user._id,
     email: user.email,
@@ -23,11 +22,10 @@ async function login(email, password) {
 
   return {
     token,
-    campuses: user.campusId, // Lista de sedes disponibles
+    campuses: user.campusId,
   };
 }
 
-// Función para actualizar el token con la sede seleccionada
 async function updateCampusToken(userId, selectedCampusId) {
   const user = await User.findById(userId).populate("campusId");
   if (!user) {
@@ -44,7 +42,7 @@ async function updateCampusToken(userId, selectedCampusId) {
     id: user._id,
     email: user.email,
     campusId: user.campusId.map((campus) => campus._id), // Lista de campus
-    selectedCampusId, // Guardamos el campus seleccionado
+    selectedCampusId,
   });
 
   return { token };
