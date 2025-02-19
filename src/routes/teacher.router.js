@@ -14,15 +14,12 @@ const {
 // Create a new teacher
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    // Extraer el campusId del token (disponible en req.selectedCampusId)
-    const { selectedCampusId } = req;
-
-    // Asegurarse de que se haya seleccionado una sede
+    const { selectedCampusId, userId } = req; // Asegúrate de que estas variables estén en el token
     if (!selectedCampusId) {
       throw createError(400, "Campus must be selected");
     }
 
-    const newTeacher = await createTeacher(req.body, selectedCampusId); // Pasar el campusId desde el token
+    const newTeacher = await createTeacher(req.body, selectedCampusId, userId); // Pasa campusId y userId desde el token
     res.status(201).json({
       success: true,
       data: newTeacher,
@@ -93,14 +90,19 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const teacherId = req.params.id;
+    const userId = req.userId; // ID del usuario desde el token
     const { firstName, lastName, phone, email, campusId } = req.body;
-    const updatedTeacher = await updateTeacher(teacherId, {
-      firstName,
-      lastName,
-      phone,
-      email,
-      campusId,
-    });
+    const updatedTeacher = await updateTeacher(
+      teacherId,
+      {
+        firstName,
+        lastName,
+        phone,
+        email,
+        campusId,
+      },
+      userId
+    ); // Pasamos el userId
     res.json({
       success: true,
       data: updatedTeacher,

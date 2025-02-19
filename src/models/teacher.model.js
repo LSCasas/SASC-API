@@ -17,6 +17,16 @@ const teacherSchema = new mongoose.Schema({
     ref: "Campus",
     required: true,
   },
+  isAchive: { type: Boolean, default: false },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

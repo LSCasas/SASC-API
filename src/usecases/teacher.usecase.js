@@ -2,23 +2,13 @@ const Teacher = require("../models/teacher.model");
 const createError = require("http-errors");
 
 // Create a new teacher
-const createTeacher = async (
-  { firstName, lastName, phone, email },
-  campusIdFromToken
-) => {
+const createTeacher = async (data, campusId, userId) => {
   try {
-    const teacherFound = await Teacher.findOne({ email });
-    if (teacherFound) {
-      throw createError(409, "Email already in use");
-    }
-
-    // Crear el nuevo maestro con el campusId del token
     const newTeacher = new Teacher({
-      firstName,
-      lastName,
-      phone,
-      email,
-      campusId: campusIdFromToken, // Asignar campusId desde el token
+      ...data,
+      campusId: campusId, // Usar campusId desde el token
+      createdBy: userId, // Usar userId desde el token
+      updatedBy: userId,
     });
 
     await newTeacher.save();
@@ -65,15 +55,20 @@ const getTeachersByCampusId = async (campusId) => {
 };
 
 // Update a teacher by ID
-const updateTeacher = async (id, updateData) => {
+const updateTeacher = async (id, updateData, userId) => {
   try {
-    const updatedTeacher = await Teacher.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    const updatedTeacher = await Teacher.findByIdAndUpdate(
+      id,
+      {
+        ...updateData,
+        updatedBy: userId, // Actualizamos el ID del usuario que hace la modificación
+      },
+      { new: true, runValidators: true }
+    );
     if (!updatedTeacher) throw createError(404, "Teacher not found");
     return updatedTeacher;
   } catch (error) {
+    console.error("Error updating teacher:", error);
     throw createError(500, "Error updating teacher: " + error.message);
   }
 };
