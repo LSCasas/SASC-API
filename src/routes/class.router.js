@@ -13,14 +13,12 @@ const {
 // Create a new class
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { name, schedule, teacherId, campusId, generation } = req.body;
-    const newClass = await createClass({
-      name,
-      schedule,
-      teacherId,
-      campusId,
-      generation,
-    });
+    const { selectedCampusId, userId } = req; // Asegúrate de que estas variables estén en el token
+    if (!selectedCampusId) {
+      throw createError(400, "Campus must be selected");
+    }
+
+    const newClass = await createClass(req.body, selectedCampusId, userId); // Pasa campusId y userId desde el token
     res.status(201).json({
       success: true,
       data: newClass,
@@ -91,14 +89,21 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const classId = req.params.id;
-    const { name, schedule, teacherId, campusId, generation } = req.body;
-    const updatedClass = await updateClass(classId, {
-      name,
-      schedule,
-      teacherId,
-      campusId,
-      generation,
-    });
+    const { selectedCampusId, userId } = req; // ID del campus y usuario desde el token
+    const { name, schedule, teacherId, generation } = req.body;
+
+    const updatedClass = await updateClass(
+      classId,
+      {
+        name,
+        schedule,
+        teacherId,
+        campusId: selectedCampusId, // Usamos el campusId desde el token
+        generation,
+      },
+      userId
+    );
+
     res.json({
       success: true,
       data: updatedClass,

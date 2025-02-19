@@ -3,28 +3,23 @@ const Teacher = require("../models/teacher.model"); // Importar el modelo de Tea
 const createError = require("http-errors");
 
 // Create a new class
-const createClass = async ({
-  name,
-  schedule,
-  teacherId,
-  campusId,
-  generation,
-}) => {
+const createClass = async (data, campusId, userId) => {
   try {
-    const teacher = await Teacher.findById(teacherId);
+    const teacher = await Teacher.findById(data.teacherId);
     if (!teacher) throw createError(404, "Teacher not found");
 
+    // Verificar que el teacher esté asignado al campus correcto
     if (teacher.campusId.toString() !== campusId.toString()) {
       throw createError(400, "Teacher cannot teach in a different campus");
     }
 
     const newClass = new Class({
-      name,
-      schedule,
-      teacherId,
-      campusId,
-      generation,
+      ...data,
+      campusId: campusId, // Usar campusId desde el token
+      createdBy: userId, // Usar userId desde el token
+      updatedBy: userId,
     });
+
     await newClass.save();
     return newClass;
   } catch (error) {
@@ -73,16 +68,21 @@ const getClassesByCampusId = async (campusId) => {
 };
 
 // Update a class by ID
-const updateClass = async (id, updateData) => {
+const updateClass = async (id, updateData, userId) => {
   try {
-    const updatedClass = await Class.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    const updatedClass = await Class.findByIdAndUpdate(
+      id,
+      {
+        ...updateData,
+        updatedBy: userId, // Actualizamos el ID del usuario que hace la modificación
+      },
+      { new: true, runValidators: true }
+    );
 
     const teacher = await Teacher.findById(updateData.teacherId);
     if (!teacher) throw createError(404, "Teacher not found");
 
+    // Verificar que el teacher esté asignado al campus correcto
     if (teacher.campusId.toString() !== updateData.campusId.toString()) {
       throw createError(400, "Teacher cannot teach in a different campus");
     }

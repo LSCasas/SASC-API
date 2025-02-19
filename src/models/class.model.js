@@ -14,8 +14,7 @@ const classSchema = new mongoose.Schema({
     required: true,
   },
   generation: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
+  isAchive: { type: Boolean, default: false },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -25,6 +24,8 @@ const classSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Class", classSchema);
