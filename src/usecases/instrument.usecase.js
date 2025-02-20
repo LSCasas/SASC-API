@@ -103,6 +103,9 @@ const updateInstrument = async (id, data, userId) => {
       if (existingInstrument) {
         throw createError(409, "Student already has an assigned instrument");
       }
+    } else {
+      // Si studentId es null, también se debe limpiar tutorId
+      data.tutorId = null;
     }
 
     const updatedInstrument = await Instrument.findByIdAndUpdate(
@@ -111,8 +114,15 @@ const updateInstrument = async (id, data, userId) => {
       { new: true, runValidators: true }
     );
 
-    await Student.updateHasInstrument(instrument.studentId);
-    await Student.updateHasInstrument(data.studentId);
+    // Actualiza hasInstrument en los estudiantes involucrados solo si no son nulos
+    await Promise.all([
+      instrument.studentId
+        ? Student.updateHasInstrument(instrument.studentId)
+        : Promise.resolve(),
+      data.studentId
+        ? Student.updateHasInstrument(data.studentId)
+        : Promise.resolve(),
+    ]);
 
     return updatedInstrument;
   } catch (error) {
