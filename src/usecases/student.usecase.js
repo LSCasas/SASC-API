@@ -90,11 +90,27 @@ const updateStudent = async (id, updateData, userId) => {
     const student = await Student.findById(id);
     if (!student) throw createError(404, "Student not found");
 
+    if (
+      updateData.tutorId ||
+      updateData.tutorName ||
+      updateData.tutorLastname ||
+      updateData.tutorPhone
+    ) {
+      const tutor = await Tutor.findById(student.tutorId);
+      if (!tutor) throw createError(404, "Tutor not found");
+
+      if (updateData.tutorName) tutor.name = updateData.tutorName;
+      if (updateData.tutorLastname) tutor.lastname = updateData.tutorLastname;
+      if (updateData.tutorPhone) tutor.phone = updateData.tutorPhone;
+
+      await tutor.save();
+    }
+
     const updatedStudent = await Student.findByIdAndUpdate(
       id,
       {
         ...updateData,
-        updatedBy: userId, // Update the user who made the changes
+        updatedBy: userId,
       },
       { new: true, runValidators: true }
     );
