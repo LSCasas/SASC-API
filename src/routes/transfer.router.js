@@ -13,7 +13,8 @@ const {
 // Create a new transfer
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const newTransfer = await createTransfer(req.body);
+    const { userId } = req; // Get the userId from the token
+    const newTransfer = await createTransfer(req.body, userId); // Pass userId to createTransfer
     res.status(201).json({
       success: true,
       data: newTransfer,
@@ -83,8 +84,9 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
 // Update a transfer by ID
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
+    const { userId } = req;
     const transferId = req.params.id;
-    const updatedTransfer = await updateTransfer(transferId, req.body);
+    const updatedTransfer = await updateTransfer(transferId, req.body, userId); // Pass userId to updateTransfer
     res.json({
       success: true,
       data: updatedTransfer,

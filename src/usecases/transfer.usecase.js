@@ -4,7 +4,7 @@ const Class = require("../models/class.model");
 const createError = require("http-errors");
 
 // Create a transfer
-const createTransfer = async (data) => {
+const createTransfer = async (data, userId) => {
   try {
     // Ensure the student exists
     const student = await Student.findById(data.studentId);
@@ -56,8 +56,15 @@ const createTransfer = async (data) => {
       );
     }
 
+    // Add createdBy and updatedBy fields
+    const transferData = {
+      ...data,
+      createdBy: userId,
+      updatedBy: userId,
+    };
+
     // Create the transfer record
-    const transfer = new Transfer(data);
+    const transfer = new Transfer(transferData);
     await transfer.save();
 
     // Update the student's campus and class information
