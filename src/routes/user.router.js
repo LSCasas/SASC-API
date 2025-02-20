@@ -3,6 +3,7 @@ const router = express.Router();
 const authMiddleware = require("../middleware/auth.middleware");
 const {
   createUser,
+  getCurrentUser,
   getAllUsers,
   getUserById,
   updateUser,
@@ -49,6 +50,23 @@ router.get("/my-campuses", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error("Error fetching campuses:", error);
     res.status(error.status || 500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// GET user auth
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const user = await getCurrentUser(req.user.id);
+    res.json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({
       success: false,
       error: error.message,
     });

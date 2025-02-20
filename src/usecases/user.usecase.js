@@ -56,6 +56,17 @@ const createUser = async ({
   }
 };
 
+// Get user auth
+const getCurrentUser = async (userId) => {
+  try {
+    const user = await User.findById(userId).populate("campusId");
+    if (!user) throw createError(404, "User not found");
+    return user;
+  } catch (error) {
+    throw createError(500, "Error fetching user: " + error.message);
+  }
+};
+
 //Get campuses by coordinator
 const getCampusesByCoordinator = async (userId) => {
   try {
@@ -151,6 +162,7 @@ const deleteUser = async (id) => {
 
 module.exports = {
   createUser,
+  getCurrentUser,
   getAllUsers,
   getUserById,
   updateUser,
