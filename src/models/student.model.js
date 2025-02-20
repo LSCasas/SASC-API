@@ -25,6 +25,15 @@ const studentSchema = new mongoose.Schema({
   specialNeeds: { type: String, default: null },
   requiredDocuments: { type: String, required: true },
   hasInstrument: { type: Boolean, default: false },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

@@ -13,7 +13,12 @@ const {
 // Create a new student
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const newStudent = await createStudent(req.body);
+    const { selectedCampusId, userId } = req; // Get campusId and userId from the token
+    if (!selectedCampusId) {
+      throw createError(400, "Campus must be selected");
+    }
+
+    const newStudent = await createStudent(req.body, selectedCampusId, userId); // Pass campusId and userId
     res.status(201).json({
       success: true,
       data: newStudent,
@@ -84,7 +89,8 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const studentId = req.params.id;
-    const updatedStudent = await updateStudent(studentId, req.body);
+    const userId = req.userId; // Get userId from token
+    const updatedStudent = await updateStudent(studentId, req.body, userId); // Pass userId for tracking
     res.json({
       success: true,
       data: updatedStudent,

@@ -19,6 +19,16 @@ const instrumentSchema = new mongoose.Schema({
     required: true,
   },
   assignmentDate: { type: Date, default: null },
+  isAchive: { type: Boolean, default: false },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

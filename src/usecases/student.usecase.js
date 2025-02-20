@@ -3,7 +3,7 @@ const Tutor = require("../models/tutor.model");
 const createError = require("http-errors");
 
 // Create a student
-const createStudent = async (data) => {
+const createStudent = async (data, campusId, userId) => {
   try {
     const studentFound = await Student.findOne({ curp: data.curp });
     if (studentFound) {
@@ -22,7 +22,7 @@ const createStudent = async (data) => {
           lastname: data.tutorLastname,
           curp: data.tutorCurp,
           phone: data.tutorPhone,
-          campusId: data.campusId,
+          campusId: campusId, // Use the campusId from the token
         });
         await tutor.save();
       }
@@ -32,9 +32,12 @@ const createStudent = async (data) => {
     const newStudent = new Student({
       ...data,
       tutorId,
+      campusId: campusId, // Use the campusId from the token
+      createdBy: userId, // Use the userId from the token
+      updatedBy: userId, // Use the userId from the token
     });
-    await newStudent.save();
 
+    await newStudent.save();
     return newStudent;
   } catch (error) {
     console.error("Error creating student:", error);
@@ -82,23 +85,21 @@ const getStudentsByCampusId = async (campusId) => {
 };
 
 // Update a student by ID
-const updateStudent = async (id, updateData) => {
+const updateStudent = async (id, updateData, userId) => {
   try {
     const student = await Student.findById(id);
     if (!student) throw createError(404, "Student not found");
 
-    const updatedStudent = await Student.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    const updatedStudent = await Student.findByIdAndUpdate(
+      id,
+      {
+        ...updateData,
+        updatedBy: userId, // Update the user who made the changes
+      },
+      { new: true, runValidators: true }
+    );
 
     if (!updatedStudent) throw createError(404, "Student not found");
-
-    if (updateData.status) {
-      const isArchived = updateData.status !== "activo";
-      await Tutor.findByIdAndUpdate(student.tutorId, { isArchive: isArchived });
-    }
-
     return updatedStudent;
   } catch (error) {
     throw createError(500, "Error updating student: " + error.message);

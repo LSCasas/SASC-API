@@ -6,8 +6,8 @@ const createTeacher = async (data, campusId, userId) => {
   try {
     const newTeacher = new Teacher({
       ...data,
-      campusId: campusId, // Usar campusId desde el token
-      createdBy: userId, // Usar userId desde el token
+      campusId: campusId,
+      createdBy: userId,
       updatedBy: userId,
     });
 
