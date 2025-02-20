@@ -3,13 +3,18 @@ const Student = require("../models/student.model");
 const createError = require("http-errors");
 
 // Create an instrument
-const createInstrument = async (data) => {
+const createInstrument = async (data, userId, campusId) => {
   try {
     if (!data.internalId) {
       throw createError(400, "Internal ID is required");
     }
 
     if (data.studentId) {
+      const student = await Student.findById(data.studentId);
+      if (!student) throw createError(404, "Student not found");
+
+      data.tutorId = student.tutorId;
+
       const existingInstrument = await Instrument.findOne({
         studentId: data.studentId,
       });
@@ -18,10 +23,16 @@ const createInstrument = async (data) => {
       }
     }
 
-    const newInstrument = new Instrument(data);
+    const newInstrument = new Instrument({
+      ...data,
+      campusId,
+      createdBy: userId,
+      updatedBy: userId,
+      isAchive: false,
+    });
+
     await newInstrument.save();
 
-    // Actualizar hasInstrument en Student
     if (data.studentId) {
       await Student.updateHasInstrument(data.studentId);
     }
@@ -73,34 +84,39 @@ const getInstrumentsByCampusId = async (campusId) => {
 };
 
 // Update an instrument by ID
-const updateInstrument = async (id, updateData) => {
+const updateInstrument = async (id, data, userId) => {
   try {
     const instrument = await Instrument.findById(id);
     if (!instrument) throw createError(404, "Instrument not found");
 
-    if (updateData.studentId) {
+    if (data.studentId) {
+      const student = await Student.findById(data.studentId);
+      if (!student) throw createError(404, "Student not found");
+
+      data.tutorId = student.tutorId;
+
       const existingInstrument = await Instrument.findOne({
-        studentId: updateData.studentId,
+        studentId: data.studentId,
+        _id: { $ne: id },
       });
-      if (existingInstrument && existingInstrument._id.toString() !== id) {
+
+      if (existingInstrument) {
         throw createError(409, "Student already has an assigned instrument");
       }
     }
 
     const updatedInstrument = await Instrument.findByIdAndUpdate(
       id,
-      updateData,
+      { ...data, updatedBy: userId },
       { new: true, runValidators: true }
     );
 
-    // Actualizar hasInstrument en los estudiantes afectados
-    if (instrument.studentId)
-      await Student.updateHasInstrument(instrument.studentId);
-    if (updateData.studentId)
-      await Student.updateHasInstrument(updateData.studentId);
+    await Student.updateHasInstrument(instrument.studentId);
+    await Student.updateHasInstrument(data.studentId);
 
     return updatedInstrument;
   } catch (error) {
+    console.error("Error updating instrument:", error);
     throw createError(500, "Error updating instrument: " + error.message);
   }
 };

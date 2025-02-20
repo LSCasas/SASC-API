@@ -19,7 +19,6 @@ const instrumentSchema = new mongoose.Schema({
     required: true,
   },
   assignmentDate: { type: Date, default: null },
-  returnDate: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
