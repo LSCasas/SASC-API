@@ -90,8 +90,9 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const teacherId = req.params.id;
-    const userId = req.userId; // ID del usuario desde el token
-    const { firstName, lastName, phone, email, campusId } = req.body;
+    const userId = req.userId;
+    const { firstName, lastName, phone, email, campusId, isAchive } = req.body;
+
     const updatedTeacher = await updateTeacher(
       teacherId,
       {
@@ -100,9 +101,10 @@ router.patch("/:id", authMiddleware, async (req, res) => {
         phone,
         email,
         campusId,
+        isAchive,
       },
       userId
-    ); // Pasamos el userId
+    );
     res.json({
       success: true,
       data: updatedTeacher,
@@ -115,7 +117,6 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     });
   }
 });
-
 // Delete a teacher by ID
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
