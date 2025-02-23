@@ -1,5 +1,6 @@
 const express = require("express");
 const authUseCase = require("../usecases/auth.usecase");
+const userUseCase = require("../usecases/user.usecase"); // Agregar esta línea
 const authMiddleware = require("../middleware/auth.middleware");
 const router = express.Router();
 
@@ -39,6 +40,10 @@ router.post("/select-campus", authMiddleware, async (req, res) => {
       });
     }
 
+    const user = await userUseCase.getUserById(userId); // Aquí se usa userUseCase
+    user.selectedCampusId = selectedCampusId;
+    await user.save();
+
     const { token } = await authUseCase.updateCampusToken(
       userId,
       selectedCampusId
@@ -53,7 +58,7 @@ router.post("/select-campus", authMiddleware, async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Campus seleccionado exitosamente",
+      message: "Campus seleccionado y actualizado exitosamente",
     });
   } catch (error) {
     console.error("Error en select-campus:", error);

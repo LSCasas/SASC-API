@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema({
       ref: "Campus",
     },
   ],
+  selectedCampusId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Campus",
+    required: false,
+    default: null,
+  },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   isArchived: { type: Boolean, default: false },

@@ -38,6 +38,9 @@ async function updateCampusToken(userId, selectedCampusId) {
     throw new Error("El usuario no tiene acceso a esta sede");
   }
 
+  user.selectedCampusId = selectedCampusId;
+  await user.save();
+
   const token = jwt.sign({
     id: user._id,
     email: user.email,
