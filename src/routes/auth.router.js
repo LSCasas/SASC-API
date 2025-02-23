@@ -69,4 +69,18 @@ router.post("/select-campus", authMiddleware, async (req, res) => {
   }
 });
 
+router.post("/logout", (req, res) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+    expires: new Date(0), // Expira inmediatamente
+  });
+
+  res.json({
+    success: true,
+    message: "Sesión cerrada correctamente",
+  });
+});
+
 module.exports = router;
