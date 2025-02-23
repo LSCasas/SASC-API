@@ -90,6 +90,13 @@ const updateStudent = async (id, updateData, userId) => {
     const student = await Student.findById(id);
     if (!student) throw createError(404, "Student not found");
 
+    if (updateData.ClassId && student.ClassId !== updateData.ClassId) {
+      if (!student.previousClasses.includes(student.ClassId)) {
+        student.previousClasses.push(student.ClassId);
+        await student.save();
+      }
+    }
+
     if (
       updateData.tutorId ||
       updateData.tutorName ||

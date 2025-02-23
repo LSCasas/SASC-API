@@ -21,6 +21,13 @@ const studentSchema = new mongoose.Schema({
     ref: "Class",
     required: true,
   },
+  previousClasses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class",
+      required: false,
+    },
+  ],
   medicalConditions: { type: String, default: null },
   specialNeeds: { type: String, default: null },
   requiredDocuments: { type: String, required: true },
