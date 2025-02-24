@@ -89,20 +89,9 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const classId = req.params.id;
-    const { selectedCampusId, userId } = req; // ID del campus y usuario desde el token
-    const { name, schedule, teacherId, generation } = req.body;
+    const { selectedCampusId, userId } = req;
 
-    const updatedClass = await updateClass(
-      classId,
-      {
-        name,
-        schedule,
-        teacherId,
-        campusId: selectedCampusId, // Usamos el campusId desde el token
-        generation,
-      },
-      userId
-    );
+    const updatedClass = await updateClass(classId, req.body, userId);
 
     res.json({
       success: true,
