@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const classSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  schedule: { type: String, required: true },
   teacherId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Teacher",
@@ -26,6 +25,9 @@ const classSchema = new mongoose.Schema({
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  days: { type: [String], required: true },
+  startTime: { type: Date, required: true },
+  endTime: { type: Date, required: true },
 });
 
 module.exports = mongoose.model("Class", classSchema);

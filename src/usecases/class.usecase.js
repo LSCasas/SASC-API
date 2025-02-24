@@ -1,22 +1,39 @@
 const Class = require("../models/class.model");
-const Teacher = require("../models/teacher.model"); // Importar el modelo de Teacher
+const Teacher = require("../models/teacher.model");
 const createError = require("http-errors");
 
-// Create a new class
+// Crear una nueva clase
 const createClass = async (data, campusId, userId) => {
   try {
     const teacher = await Teacher.findById(data.teacherId);
     if (!teacher) throw createError(404, "Teacher not found");
 
-    // Verificar que el teacher esté asignado al campus correcto
     if (teacher.campusId.toString() !== campusId.toString()) {
       throw createError(400, "Teacher cannot teach in a different campus");
     }
 
+    if (data.startTime >= data.endTime) {
+      throw createError(400, "Start time must be earlier than end time");
+    }
+
+    const validDays = [
+      "lunes",
+      "martes",
+      "miercoles",
+      "jueves",
+      "viernes",
+      "sabado",
+      "domingo",
+    ];
+    const invalidDays = data.days.filter((day) => !validDays.includes(day));
+    if (invalidDays.length > 0) {
+      throw createError(400, `Invalid days: ${invalidDays.join(", ")}`);
+    }
+
     const newClass = new Class({
       ...data,
-      campusId: campusId, // Usar campusId desde el token
-      createdBy: userId, // Usar userId desde el token
+      campusId: campusId,
+      createdBy: userId,
       updatedBy: userId,
     });
 
@@ -28,7 +45,7 @@ const createClass = async (data, campusId, userId) => {
   }
 };
 
-// Get all classes
+// Obtener todas las clases
 const getAllClasses = async () => {
   try {
     return await Class.find().populate("teacherId").populate("campusId");
@@ -37,7 +54,7 @@ const getAllClasses = async () => {
   }
 };
 
-// Get a class by ID
+// Obtener una clase por ID
 const getClassById = async (id) => {
   try {
     const classData = await Class.findById(id)
@@ -50,7 +67,7 @@ const getClassById = async (id) => {
   }
 };
 
-// Get classes by campus ID
+// Obtener clases por campus ID
 const getClassesByCampusId = async (campusId) => {
   try {
     const classes = await Class.find({ campusId })
@@ -67,14 +84,34 @@ const getClassesByCampusId = async (campusId) => {
   }
 };
 
-// Update a class by ID
+// Actualizar una clase por ID
 const updateClass = async (id, updateData, userId) => {
   try {
+    if (updateData.startTime >= updateData.endTime) {
+      throw createError(400, "Start time must be earlier than end time");
+    }
+
+    const validDays = [
+      "lunes",
+      "martes",
+      "miercoles",
+      "jueves",
+      "viernes",
+      "sabado",
+      "domingo",
+    ];
+    const invalidDays = updateData.days.filter(
+      (day) => !validDays.includes(day)
+    );
+    if (invalidDays.length > 0) {
+      throw createError(400, `Invalid days: ${invalidDays.join(", ")}`);
+    }
+
     const updatedClass = await Class.findByIdAndUpdate(
       id,
       {
         ...updateData,
-        updatedBy: userId, // Actualizamos el ID del usuario que hace la modificación
+        updatedBy: userId,
       },
       { new: true, runValidators: true }
     );
@@ -82,7 +119,6 @@ const updateClass = async (id, updateData, userId) => {
     const teacher = await Teacher.findById(updateData.teacherId);
     if (!teacher) throw createError(404, "Teacher not found");
 
-    // Verificar que el teacher esté asignado al campus correcto
     if (teacher.campusId.toString() !== updateData.campusId.toString()) {
       throw createError(400, "Teacher cannot teach in a different campus");
     }
@@ -94,7 +130,7 @@ const updateClass = async (id, updateData, userId) => {
   }
 };
 
-// Delete a class by ID
+// Eliminar una clase por ID
 const deleteClass = async (id) => {
   try {
     const classData = await Class.findByIdAndDelete(id);
