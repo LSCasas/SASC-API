@@ -22,7 +22,7 @@ const createStudent = async (data, campusId, userId) => {
           lastname: data.tutorLastname,
           curp: data.tutorCurp,
           phone: data.tutorPhone,
-          campusId: campusId, // Use the campusId from the token
+          campusId: campusId,
         });
         await tutor.save();
       }
@@ -32,9 +32,9 @@ const createStudent = async (data, campusId, userId) => {
     const newStudent = new Student({
       ...data,
       tutorId,
-      campusId: campusId, // Use the campusId from the token
-      createdBy: userId, // Use the userId from the token
-      updatedBy: userId, // Use the userId from the token
+      campusId: campusId,
+      createdBy: userId,
+      updatedBy: userId,
     });
 
     await newStudent.save();
@@ -57,9 +57,16 @@ const getAllStudents = async () => {
 // Get a student by ID
 const getStudentById = async (id) => {
   try {
-    const student = await Student.findById(id).populate(
-      "tutorId campusId ClassId"
-    );
+    const student = await Student.findById(id)
+      .populate("tutorId campusId ClassId")
+      .populate({
+        path: "previousClasses",
+        populate: {
+          path: "teacherId campusId",
+          select: "name schedule teacherId campusId",
+        },
+      });
+
     if (!student) throw createError(404, "Student not found");
     return student;
   } catch (error) {
