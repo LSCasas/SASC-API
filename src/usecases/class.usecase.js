@@ -139,11 +139,13 @@ const updateClass = async (id, updateData, userId) => {
 
     if (updateData.name) updateFields.name = updateData.name;
     if (updateData.teacherId !== undefined)
-      updateFields.teacherId = updateData.teacherId; // Solo se actualiza si se proporciona
+      updateFields.teacherId = updateData.teacherId;
     if (updateData.generation) updateFields.generation = updateData.generation;
     if (updateData.days) updateFields.days = updateData.days;
     if (updateData.startTime) updateFields.startTime = updateData.startTime;
     if (updateData.endTime) updateFields.endTime = updateData.endTime;
+    if (updateData.isAchive !== undefined)
+      updateFields.isAchive = updateData.isAchive;
 
     const updatedClass = await Class.findByIdAndUpdate(
       id,
