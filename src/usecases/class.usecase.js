@@ -5,11 +5,13 @@ const createError = require("http-errors");
 // Crear una nueva clase
 const createClass = async (data, campusId, userId) => {
   try {
-    const teacher = await Teacher.findById(data.teacherId);
-    if (!teacher) throw createError(404, "Teacher not found");
+    if (data.teacherId) {
+      const teacher = await Teacher.findById(data.teacherId);
+      if (!teacher) throw createError(404, "Teacher not found");
 
-    if (teacher.campusId.toString() !== campusId.toString()) {
-      throw createError(400, "Teacher cannot teach in a different campus");
+      if (teacher.campusId.toString() !== campusId.toString()) {
+        throw createError(400, "Teacher cannot teach in a different campus");
+      }
     }
 
     if (data.startTime >= data.endTime) {
@@ -87,6 +89,20 @@ const getClassesByCampusId = async (campusId) => {
 // Actualizar una clase por ID
 const updateClass = async (id, updateData, userId) => {
   try {
+    if (updateData.teacherId) {
+      const teacher = await Teacher.findById(updateData.teacherId);
+      if (!teacher) {
+        throw createError(404, "Teacher not found");
+      }
+
+      const { campusId } = teacher;
+      const classData = await Class.findById(id);
+
+      if (classData && campusId.toString() !== classData.campusId.toString()) {
+        throw createError(400, "Teacher cannot teach in a different campus");
+      }
+    }
+
     if (updateData.startTime && updateData.endTime) {
       if (updateData.startTime >= updateData.endTime) {
         throw createError(400, "Start time must be earlier than end time");
@@ -122,7 +138,8 @@ const updateClass = async (id, updateData, userId) => {
     };
 
     if (updateData.name) updateFields.name = updateData.name;
-    if (updateData.teacherId) updateFields.teacherId = updateData.teacherId;
+    if (updateData.teacherId !== undefined)
+      updateFields.teacherId = updateData.teacherId; // Solo se actualiza si se proporciona
     if (updateData.generation) updateFields.generation = updateData.generation;
     if (updateData.days) updateFields.days = updateData.days;
     if (updateData.startTime) updateFields.startTime = updateData.startTime;

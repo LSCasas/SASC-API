@@ -5,7 +5,8 @@ const classSchema = new mongoose.Schema({
   teacherId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Teacher",
-    required: true,
+    required: false,
+    default: null,
   },
   campusId: {
     type: mongoose.Schema.Types.ObjectId,
