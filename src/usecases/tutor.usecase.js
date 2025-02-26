@@ -41,10 +41,19 @@ const getAllTutors = async () => {
   }
 };
 
-// Get a tutor by ID
+// Get a tutor by ID with specific field selection
 const getTutorById = async (id) => {
   try {
-    const tutor = await Tutor.findById(id).populate("children"); // Solo populate de 'children'
+    const tutor = await Tutor.findById(id).populate({
+      path: "children",
+      select: "firstName lastName ClassId",
+      populate: {
+        path: "ClassId",
+        select: "name",
+        model: "Class",
+      },
+    });
+
     if (!tutor) throw createError(404, "Tutor not found");
     return tutor;
   } catch (error) {
@@ -55,9 +64,19 @@ const getTutorById = async (id) => {
 // Get tutors by campus ID
 const getTutorsByCampusId = async (campusId) => {
   try {
-    const tutors = await Tutor.find({ campusId }).populate("children"); // Solo populate de 'children'
+    const tutors = await Tutor.find({ campusId }).populate({
+      path: "children",
+      select: "firstName lastName ClassId",
+      populate: {
+        path: "ClassId",
+        select: "name",
+        model: "Class",
+      },
+    });
+
     if (!tutors.length)
       throw createError(404, "No tutors found for this campus");
+
     return tutors;
   } catch (error) {
     throw createError(500, "Error fetching tutors by campus: " + error.message);
