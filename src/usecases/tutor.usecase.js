@@ -2,14 +2,28 @@ const Tutor = require("../models/tutor.model");
 const createError = require("http-errors");
 
 // Create a tutor
-const createTutor = async ({ name, lastname, curp, phone, campusId }) => {
+const createTutor = async ({
+  name,
+  lastname,
+  curp,
+  phone,
+  campusId,
+  children,
+}) => {
   try {
     const tutorFound = await Tutor.findOne({ curp });
     if (tutorFound) {
       throw createError(409, "CURP already in use");
     }
 
-    const newTutor = new Tutor({ name, lastname, curp, phone, campusId });
+    const newTutor = new Tutor({
+      name,
+      lastname,
+      curp,
+      phone,
+      campusId,
+      children,
+    });
     await newTutor.save();
     return newTutor;
   } catch (error) {

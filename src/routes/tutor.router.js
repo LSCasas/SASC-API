@@ -13,13 +13,14 @@ const {
 // Create a new tutor
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { name, lastname, curp, phone, campusId } = req.body;
+    const { name, lastname, curp, phone, campusId, children } = req.body;
     const newTutor = await createTutor({
       name,
       lastname,
       curp,
       phone,
       campusId,
+      children, // Campo opcional
     });
     res.status(201).json({
       success: true,
