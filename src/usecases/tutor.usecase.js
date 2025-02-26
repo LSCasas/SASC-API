@@ -1,5 +1,6 @@
 const Tutor = require("../models/tutor.model");
 const createError = require("http-errors");
+const Student = require("../models/student.model");
 
 // Create a tutor
 const createTutor = async ({
@@ -41,7 +42,7 @@ const getAllTutors = async () => {
   }
 };
 
-// Get a tutor by ID with specific field selection
+// Get a tutor by ID
 const getTutorById = async (id) => {
   try {
     const tutor = await Tutor.findById(id).populate({
@@ -61,12 +62,12 @@ const getTutorById = async (id) => {
   }
 };
 
-// Get tutors by campus ID
+// Obtener los tutores por ID de campus
 const getTutorsByCampusId = async (campusId) => {
   try {
     const tutors = await Tutor.find({ campusId }).populate({
       path: "children",
-      select: "firstName lastName ClassId",
+      select: "firstName lastName ClassId status", // Asegúrate de que 'status' esté seleccionado
       populate: {
         path: "ClassId",
         select: "name",
@@ -74,8 +75,25 @@ const getTutorsByCampusId = async (campusId) => {
       },
     });
 
-    if (!tutors.length)
+    if (!tutors.length) {
       throw createError(404, "No tutors found for this campus");
+    }
+
+    for (let tutor of tutors) {
+      const students = await Student.find({ _id: { $in: tutor.children } });
+
+      const allInactive = students.every(
+        (student) => student.status !== "activo"
+      );
+
+      if (allInactive) {
+        tutor.isArchive = true;
+      } else {
+        tutor.isArchive = false;
+      }
+
+      await tutor.save();
+    }
 
     return tutors;
   } catch (error) {
