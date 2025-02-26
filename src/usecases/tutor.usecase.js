@@ -63,10 +63,23 @@ const deleteTutor = async (id) => {
   }
 };
 
+// Get tutors by campus ID
+const getTutorsByCampusId = async (campusId) => {
+  try {
+    const tutors = await Tutor.find({ campusId }).populate("campusId");
+    if (!tutors.length)
+      throw createError(404, "No tutors found for this campus");
+    return tutors;
+  } catch (error) {
+    throw createError(500, "Error fetching tutors by campus: " + error.message);
+  }
+};
+
 module.exports = {
   createTutor,
   getAllTutors,
   getTutorById,
+  getTutorsByCampusId,
   updateTutor,
   deleteTutor,
 };

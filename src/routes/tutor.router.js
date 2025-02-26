@@ -5,6 +5,7 @@ const {
   createTutor,
   getAllTutors,
   getTutorById,
+  getTutorsByCampusId,
   updateTutor,
   deleteTutor,
 } = require("../usecases/tutor.usecase");
@@ -61,6 +62,24 @@ router.get("/:id", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching tutor by ID:", error);
+    res.status(error.status || 500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// Get tutors by campus ID
+router.get("/campus/:campusId", authMiddleware, async (req, res) => {
+  try {
+    const campusId = req.params.campusId;
+    const tutors = await getTutorsByCampusId(campusId);
+    res.json({
+      success: true,
+      data: tutors,
+    });
+  } catch (error) {
+    console.error("Error fetching tutors by campus ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
