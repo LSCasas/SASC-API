@@ -77,9 +77,15 @@ const getStudentById = async (id) => {
 // Get students by campus ID
 const getStudentsByCampusId = async (campusId) => {
   try {
-    const students = await Student.find({ campusId }).populate(
-      "tutorId campusId ClassId"
-    );
+    const students = await Student.find({ campusId })
+      .populate("tutorId campusId ClassId")
+      .populate({
+        path: "previousClasses",
+        populate: {
+          path: "teacherId campusId",
+          select: "name schedule teacherId campusId",
+        },
+      });
     if (!students.length)
       throw createError(404, "No students found for this campus");
     return students;
