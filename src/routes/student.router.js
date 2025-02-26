@@ -78,6 +78,7 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching students by campus ID:", error);
+    // Manejar el error 404 específicamente
     res.status(error.status || 500).json({
       success: false,
       error: error.message,

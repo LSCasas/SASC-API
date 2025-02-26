@@ -95,8 +95,11 @@ const getStudentsByCampusId = async (campusId) => {
           select: "name schedule teacherId campusId",
         },
       });
-    if (!students.length)
+
+    if (!students || students.length === 0) {
       throw createError(404, "No students found for this campus");
+    }
+
     return students;
   } catch (error) {
     throw createError(
