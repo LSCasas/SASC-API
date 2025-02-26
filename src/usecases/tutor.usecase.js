@@ -44,11 +44,23 @@ const getAllTutors = async () => {
 // Get a tutor by ID
 const getTutorById = async (id) => {
   try {
-    const tutor = await Tutor.findById(id).populate("campusId");
+    const tutor = await Tutor.findById(id).populate("children"); // Solo populate de 'children'
     if (!tutor) throw createError(404, "Tutor not found");
     return tutor;
   } catch (error) {
     throw createError(500, "Error fetching tutor: " + error.message);
+  }
+};
+
+// Get tutors by campus ID
+const getTutorsByCampusId = async (campusId) => {
+  try {
+    const tutors = await Tutor.find({ campusId }).populate("children"); // Solo populate de 'children'
+    if (!tutors.length)
+      throw createError(404, "No tutors found for this campus");
+    return tutors;
+  } catch (error) {
+    throw createError(500, "Error fetching tutors by campus: " + error.message);
   }
 };
 
@@ -74,18 +86,6 @@ const deleteTutor = async (id) => {
     return tutor;
   } catch (error) {
     throw createError(500, "Error deleting tutor: " + error.message);
-  }
-};
-
-// Get tutors by campus ID
-const getTutorsByCampusId = async (campusId) => {
-  try {
-    const tutors = await Tutor.find({ campusId }).populate("campusId");
-    if (!tutors.length)
-      throw createError(404, "No tutors found for this campus");
-    return tutors;
-  } catch (error) {
-    throw createError(500, "Error fetching tutors by campus: " + error.message);
   }
 };
 
