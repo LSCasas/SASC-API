@@ -5,6 +5,7 @@ const createError = require("http-errors");
 // Create a student
 const createStudent = async (data, campusId, userId) => {
   try {
+    // Buscar si el estudiante ya existe por CURP
     const studentFound = await Student.findOne({ curp: data.curp });
     if (studentFound) {
       throw createError(409, "CURP already exists");
@@ -12,23 +13,25 @@ const createStudent = async (data, campusId, userId) => {
 
     let tutorId;
 
-    if (data.tutorId) {
-      tutorId = data.tutorId;
-    } else {
-      let tutor = await Tutor.findOne({ curp: data.tutorCurp });
-      if (!tutor) {
-        tutor = new Tutor({
-          name: data.tutorName,
-          lastname: data.tutorLastname,
-          curp: data.tutorCurp,
-          phone: data.tutorPhone,
-          campusId: campusId,
-        });
-        await tutor.save();
-      }
-      tutorId = tutor._id;
+    // Comprobar si ya existe el tutor por CURP
+    let tutor = await Tutor.findOne({ curp: data.tutorCurp });
+
+    if (!tutor) {
+      // Si el tutor no existe, creamos uno nuevo
+      tutor = new Tutor({
+        name: data.tutorName,
+        lastname: data.tutorLastname,
+        curp: data.tutorCurp,
+        phone: data.tutorPhone,
+        campusId: campusId,
+      });
+      await tutor.save();
     }
 
+    // Asignamos el tutorId al estudiante
+    tutorId = tutor._id;
+
+    // Crear el nuevo estudiante
     const newStudent = new Student({
       ...data,
       tutorId,
@@ -37,7 +40,13 @@ const createStudent = async (data, campusId, userId) => {
       updatedBy: userId,
     });
 
+    // Guardamos el nuevo estudiante
     await newStudent.save();
+
+    // Ahora agregamos este estudiante a la lista de children del tutor
+    tutor.children.push(newStudent._id);
+    await tutor.save(); // Guardamos los cambios en el tutor
+
     return newStudent;
   } catch (error) {
     console.error("Error creating student:", error);
