@@ -15,7 +15,8 @@ const createCampus = async ({ name, address, contactPhone }, userId) => {
 
     await newCampus.save();
 
-    const admins = await User.find({ role: "admin" });
+    const admins = await User.find({ role: "admin", isArchived: false });
+
     for (let admin of admins) {
       if (!admin.campusId.includes(newCampus._id)) {
         admin.campusId.push(newCampus._id);
@@ -71,6 +72,7 @@ const updateCampus = async (id, updateData, userId) => {
     throw createError(500, "Error updating campus: " + error.message);
   }
 };
+
 // Delete a campus by ID
 const deleteCampus = async (id) => {
   try {

@@ -14,6 +14,7 @@ const createUser = async ({
   role,
   campusId = [],
   createdBy,
+  adminType,
 }) => {
   try {
     const userFound = await User.findOne({ email });
@@ -36,6 +37,7 @@ const createUser = async ({
       role,
       campusId: [],
       createdBy,
+      adminType: adminType || null,
     };
 
     if (role === "admin") {

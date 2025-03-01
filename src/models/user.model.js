@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   isArchived: { type: Boolean, default: false },
+  adminType: { type: String, default: null },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
