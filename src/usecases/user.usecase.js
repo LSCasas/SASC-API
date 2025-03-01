@@ -103,37 +103,18 @@ const getUserById = async (id) => {
 // Update a user by ID
 const updateUser = async (id, updateData, updatedBy) => {
   try {
-    if (updateData.password) {
-      updateData.password = await encrypt.encrypt(updateData.password);
-    }
-
     const user = await User.findById(id);
     if (!user) throw createError(404, "User not found");
 
-    if (updateData.campusId) {
-      if (!Array.isArray(updateData.campusId)) {
-        throw createError(400, "campusId must be an array");
-      }
+    if (updateData.isArchived === true) {
+      updateData.campusId = [];
+    } else if (updateData.isArchived === false && user.role === "admin") {
+      const campuses = await Campus.find();
+      updateData.campusId = campuses.map((campus) => campus._id);
+    }
 
-      let currentCampuses = user.campusId.map((campus) => campus.toString());
-      let newCampuses = updateData.campusId.map((id) => id.toString());
-
-      if (newCampuses.length === 0) {
-        updateData.campusId = [];
-      } else {
-        const campusesToRemove = newCampuses
-          .filter((id) => id.startsWith("-"))
-          .map((id) => id.substring(1));
-
-        currentCampuses = currentCampuses.filter(
-          (campus) => !campusesToRemove.includes(campus)
-        );
-
-        const campusesToAdd = newCampuses.filter((id) => !id.startsWith("-"));
-        updateData.campusId = [
-          ...new Set([...currentCampuses, ...campusesToAdd]),
-        ];
-      }
+    if (updateData.password) {
+      updateData.password = await encrypt.encrypt(updateData.password);
     }
 
     updateData.updatedBy = updatedBy;
