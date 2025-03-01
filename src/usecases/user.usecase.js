@@ -106,11 +106,13 @@ const updateUser = async (id, updateData, updatedBy) => {
     const user = await User.findById(id);
     if (!user) throw createError(404, "User not found");
 
+    if (updateData.role === "admin") {
+      const campuses = await Campus.find();
+      updateData.campusId = campuses.map((campus) => campus._id); // Asigna todos los campus
+    }
+
     if (updateData.isArchived === true) {
       updateData.campusId = [];
-    } else if (updateData.isArchived === false && user.role === "admin") {
-      const campuses = await Campus.find();
-      updateData.campusId = campuses.map((campus) => campus._id);
     }
 
     if (updateData.password) {
