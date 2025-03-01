@@ -106,6 +106,10 @@ const updateUser = async (id, updateData, updatedBy) => {
     const user = await User.findById(id);
     if (!user) throw createError(404, "User not found");
 
+    if (user.role === "admin" && updateData.role === "coordinator") {
+      updateData.adminType = null;
+    }
+
     if (updateData.role === "admin") {
       const campuses = await Campus.find();
       updateData.campusId = campuses.map((campus) => campus._id); // Asigna todos los campus
