@@ -70,17 +70,15 @@ router.get("/:id", authMiddleware, async (req, res) => {
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const campusId = req.params.id;
-    const { name, address, contactPhone } = req.body;
+    const { name, address, contactPhone, isAchive } = req.body; // Agregar isAchive
     const userId = req.userId;
+
     const updatedCampus = await updateCampus(
       campusId,
-      {
-        name,
-        address,
-        contactPhone,
-      },
+      { name, address, contactPhone, isAchive }, // Incluir isAchive
       userId
     );
+
     res.json({
       success: true,
       data: updatedCampus,

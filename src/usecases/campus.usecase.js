@@ -71,7 +71,6 @@ const updateCampus = async (id, updateData, userId) => {
     throw createError(500, "Error updating campus: " + error.message);
   }
 };
-
 // Delete a campus by ID
 const deleteCampus = async (id) => {
   try {
