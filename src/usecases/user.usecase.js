@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../models/user.model");
-const Campus = require("../models/campus.model"); // Asegúrate de tener el modelo de Campus
+const Campus = require("../models/campus.model");
 const createError = require("http-errors");
 const encrypt = require("../lib/encrypt");
 
@@ -117,6 +117,32 @@ const updateUser = async (id, updateData, updatedBy) => {
 
     if (updateData.isArchived === true) {
       updateData.campusId = [];
+    }
+
+    if (updateData.campusId) {
+      if (!Array.isArray(updateData.campusId)) {
+        throw createError(400, "campusId must be an array");
+      }
+
+      let currentCampuses = user.campusId.map((campus) => campus.toString());
+      let newCampuses = updateData.campusId.map((id) => id.toString());
+
+      if (newCampuses.length === 0) {
+        updateData.campusId = [];
+      } else {
+        const campusesToRemove = newCampuses
+          .filter((id) => id.startsWith("-"))
+          .map((id) => id.substring(1));
+
+        currentCampuses = currentCampuses.filter(
+          (campus) => !campusesToRemove.includes(campus)
+        );
+
+        const campusesToAdd = newCampuses.filter((id) => !id.startsWith("-"));
+        updateData.campusId = [
+          ...new Set([...currentCampuses, ...campusesToAdd]),
+        ];
+      }
     }
 
     if (updateData.password) {
