@@ -14,8 +14,16 @@ const {
 // Create a new user
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { firstName, lastName, email, password, phone, role, campusId } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+      role,
+      campusId,
+      adminType,
+    } = req.body;
     const createdBy = req.user.id;
 
     const newUser = await createUser({
@@ -26,6 +34,7 @@ router.post("/", authMiddleware, async (req, res) => {
       phone,
       role,
       campusId,
+      adminType,
       createdBy,
     });
 
