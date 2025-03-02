@@ -44,9 +44,9 @@ router.post("/", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating user:", error);
-    res.status(500).json({
+    res.status(error.status || 500).json({
       success: false,
-      error: "Error creating user",
+      error: error.message,
     });
   }
 });
