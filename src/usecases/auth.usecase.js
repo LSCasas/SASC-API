@@ -9,6 +9,12 @@ async function login(email, password) {
     throw new Error("Correo o contraseña inválida");
   }
 
+  if (user.isArchived) {
+    throw new Error(
+      "Tu cuenta ha sido desactivada. Contacta con el administrador para más información."
+    );
+  }
+
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
     throw new Error("Correo o contraseña inválida");
@@ -17,7 +23,7 @@ async function login(email, password) {
   const token = jwt.sign({
     id: user._id,
     email: user.email,
-    campusId: user.campusId.map((campus) => campus._id), // Lista de campus
+    campusId: user.campusId.map((campus) => campus._id),
   });
 
   return {
@@ -32,6 +38,12 @@ async function updateCampusToken(userId, selectedCampusId) {
     throw new Error("Usuario no encontrado");
   }
 
+  if (user.isArchived) {
+    throw new Error(
+      "Tu cuenta ha sido desactivada. Contacta con el administrador para más información."
+    );
+  }
+
   if (
     !user.campusId.some((campus) => campus._id.toString() === selectedCampusId)
   ) {
@@ -44,7 +56,7 @@ async function updateCampusToken(userId, selectedCampusId) {
   const token = jwt.sign({
     id: user._id,
     email: user.email,
-    campusId: user.campusId.map((campus) => campus._id), // Lista de campus
+    campusId: user.campusId.map((campus) => campus._id),
     selectedCampusId,
   });
 

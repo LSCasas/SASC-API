@@ -1,6 +1,6 @@
 const express = require("express");
 const authUseCase = require("../usecases/auth.usecase");
-const userUseCase = require("../usecases/user.usecase"); // Agregar esta línea
+const userUseCase = require("../usecases/user.usecase");
 const authMiddleware = require("../middleware/auth.middleware");
 const router = express.Router();
 
@@ -40,7 +40,15 @@ router.post("/select-campus", authMiddleware, async (req, res) => {
       });
     }
 
-    const user = await userUseCase.getUserById(userId); // Aquí se usa userUseCase
+    const user = await userUseCase.getUserById(userId);
+    if (user.isArchived) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "No puedes seleccionar un campus porque tu cuenta ha sido desactivada.",
+      });
+    }
+
     user.selectedCampusId = selectedCampusId;
     await user.save();
 
@@ -74,7 +82,7 @@ router.post("/logout", (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "Strict",
-    expires: new Date(0), // Expira inmediatamente
+    expires: new Date(0),
   });
 
   res.json({
