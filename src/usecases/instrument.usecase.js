@@ -6,12 +6,12 @@ const createError = require("http-errors");
 const createInstrument = async (data, userId, campusId) => {
   try {
     if (!data.internalId) {
-      throw createError(400, "Internal ID is required");
+      throw createError(400, "Se requiere identificación interna");
     }
 
     if (data.studentId) {
       const student = await Student.findById(data.studentId);
-      if (!student) throw createError(404, "Student not found");
+      if (!student) throw createError(404, "Estudiante no encontrado");
 
       data.tutorId = student.tutorId;
 
@@ -19,7 +19,10 @@ const createInstrument = async (data, userId, campusId) => {
         studentId: data.studentId,
       });
       if (existingInstrument) {
-        throw createError(409, "Student already has an assigned instrument");
+        throw createError(
+          409,
+          "El estudiante ya tiene un instrumento asignado"
+        );
       }
     }
 
@@ -39,8 +42,8 @@ const createInstrument = async (data, userId, campusId) => {
 
     return newInstrument;
   } catch (error) {
-    console.error("Error creating instrument:", error);
-    throw createError(500, "Error creating instrument: " + error.message);
+    console.error("Error al crear el instrumento:", error);
+    throw createError(500, "Error al crear el instrumento: " + error.message);
   }
 };
 
@@ -49,7 +52,10 @@ const getAllInstruments = async () => {
   try {
     return await Instrument.find().populate("studentId tutorId campusId");
   } catch (error) {
-    throw createError(500, "Error fetching instruments: " + error.message);
+    throw createError(
+      500,
+      "Error al obtener los instrumentos: " + error.message
+    );
   }
 };
 
@@ -59,10 +65,10 @@ const getInstrumentById = async (id) => {
     const instrument = await Instrument.findById(id).populate(
       "studentId tutorId campusId"
     );
-    if (!instrument) throw createError(404, "Instrument not found");
+    if (!instrument) throw createError(404, "Instrumento no encontrado");
     return instrument;
   } catch (error) {
-    throw createError(500, "Error fetching instrument: " + error.message);
+    throw createError(500, "Error al obtener el instrumento: " + error.message);
   }
 };
 
@@ -73,12 +79,12 @@ const getInstrumentsByCampusId = async (campusId) => {
       "studentId tutorId campusId"
     );
     if (!instruments.length)
-      throw createError(404, "No instruments found for this campus");
+      throw createError(404, "No se encontraron instrumentos para este campus");
     return instruments;
   } catch (error) {
     throw createError(
       500,
-      "Error fetching instruments by campus: " + error.message
+      "Error al obtener los instrumentos por campus: " + error.message
     );
   }
 };
@@ -91,7 +97,7 @@ const updateInstrument = async (id, data, userId) => {
 
     if (data.studentId) {
       const student = await Student.findById(data.studentId);
-      if (!student) throw createError(404, "Student not found");
+      if (!student) throw createError(404, "Estudiante no encontrado");
 
       data.tutorId = student.tutorId;
 

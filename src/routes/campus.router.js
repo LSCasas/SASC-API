@@ -22,10 +22,10 @@ router.post("/", authMiddleware, async (req, res) => {
       data: newCampus,
     });
   } catch (error) {
-    console.error("Error creating campus:", error);
+    console.error("Error al crear el campus:", error);
     res.status(500).json({
       success: false,
-      error: "Error creating campus",
+      error: "Error al crear el campus",
     });
   }
 });
@@ -39,10 +39,10 @@ router.get("/", authMiddleware, async (req, res) => {
       data: campuses,
     });
   } catch (error) {
-    console.error("Error fetching campuses:", error);
+    console.error("Error al obtener los campus:", error);
     res.status(500).json({
       success: false,
-      error: "Error fetching campuses",
+      error: "Error al obtener los campus",
     });
   }
 });
@@ -57,7 +57,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
       data: campus,
     });
   } catch (error) {
-    console.error("Error fetching campus by ID:", error);
+    console.error("Error al obtener el campus por ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -69,12 +69,12 @@ router.get("/:id", authMiddleware, async (req, res) => {
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const campusId = req.params.id;
-    const { name, address, contactPhone, isAchive } = req.body; // Agregar isAchive
+    const { name, address, contactPhone, isAchive } = req.body;
     const userId = req.userId;
 
     const updatedCampus = await updateCampus(
       campusId,
-      { name, address, contactPhone, isAchive }, // Incluir isAchive
+      { name, address, contactPhone, isAchive },
       userId
     );
 
@@ -83,7 +83,7 @@ router.patch("/:id", authMiddleware, async (req, res) => {
       data: updatedCampus,
     });
   } catch (error) {
-    console.error("Error updating campus:", error);
+    console.error("Error al actualizar el campus:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
