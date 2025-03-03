@@ -7,20 +7,19 @@ const {
   getTransferById,
   getTransfersByCampusId,
   updateTransfer,
-  deleteTransfer,
 } = require("../usecases/transfer.usecase");
 
 // Create a new transfer
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { userId } = req; // Get the userId from the token
-    const newTransfer = await createTransfer(req.body, userId); // Pass userId to createTransfer
+    const { userId } = req;
+    const newTransfer = await createTransfer(req.body, userId);
     res.status(201).json({
       success: true,
       data: newTransfer,
     });
   } catch (error) {
-    console.error("Error creating transfer:", error);
+    console.error("Error al crear la transferencia:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -37,10 +36,10 @@ router.get("/", authMiddleware, async (req, res) => {
       data: transfers,
     });
   } catch (error) {
-    console.error("Error fetching transfers:", error);
+    console.error("Error al obtener las transferencias:", error);
     res.status(500).json({
       success: false,
-      error: "Error fetching transfers",
+      error: "Error al obtener las transferencias",
     });
   }
 });
@@ -55,7 +54,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
       data: transfer,
     });
   } catch (error) {
-    console.error("Error fetching transfer by ID:", error);
+    console.error("Error al obtener la transferencia por ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -73,7 +72,7 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
       data: transfers,
     });
   } catch (error) {
-    console.error("Error fetching transfers by campus ID:", error);
+    console.error("Error al obtener transferencias por ID del campus:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -86,31 +85,13 @@ router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const { userId } = req;
     const transferId = req.params.id;
-    const updatedTransfer = await updateTransfer(transferId, req.body, userId); // Pass userId to updateTransfer
+    const updatedTransfer = await updateTransfer(transferId, req.body, userId); // Pasar userId a updateTransfer
     res.json({
       success: true,
       data: updatedTransfer,
     });
   } catch (error) {
-    console.error("Error updating transfer:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-
-// Delete a transfer by ID
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const transferId = req.params.id;
-    await deleteTransfer(transferId);
-    res.json({
-      success: true,
-      message: "Transfer deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting transfer:", error);
+    console.error("Error al actualizar la transferencia:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,

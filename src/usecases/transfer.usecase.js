@@ -7,13 +7,11 @@ const createError = require("http-errors");
 // Create a transfer
 const createTransfer = async (data, userId) => {
   try {
-    // Ensure the student exists
     const student = await Student.findById(data.studentId);
     if (!student) {
-      throw createError(404, "Student not found");
+      throw createError(404, "Estudiante no encontrado");
     }
 
-    // Ensure the student has no instrument
     if (student.hasInstrument) {
       throw createError(
         400,
@@ -21,70 +19,62 @@ const createTransfer = async (data, userId) => {
       );
     }
 
-    // Ensure the origin and destination locations are different
     if (
       data.originLocationId.toString() === data.destinationLocationId.toString()
     ) {
       throw createError(
         400,
-        "The origin and destination campuses cannot be the same"
+        "Los campus de origen y destino no pueden ser los mismos"
       );
     }
 
-    // Ensure the student is currently in the origin campus
     if (student.campusId.toString() !== data.originLocationId.toString()) {
       throw createError(
         400,
-        "The student is not currently at the specified origin campus"
+        "El estudiante no se encuentra actualmente en el campus de origen especificado."
       );
     }
 
-    // Ensure the origin and destination classes are valid
     const originClass = await Class.findById(data.originClass);
     const destinationClass = await Class.findById(data.destinationClass);
     if (!originClass || !destinationClass) {
-      throw createError(404, "One or both classes are not found");
+      throw createError(404, "No se encuentran una o ambas clases");
     }
 
-    // Validate that the origin class belongs to the origin campus
     if (originClass.campusId.toString() !== data.originLocationId.toString()) {
       throw createError(
         400,
-        "The origin class does not belong to the origin campus"
+        "La clase de origen no pertenece al campus de origen."
       );
     }
 
-    // Validate that the destination class belongs to the destination campus
     if (
       destinationClass.campusId.toString() !==
       data.destinationLocationId.toString()
     ) {
       throw createError(
         400,
-        "The destination class does not belong to the destination campus"
+        "La clase de destino no pertenece al campus de destino."
       );
     }
 
-    // Add createdBy and updatedBy fields
     const transferData = {
       ...data,
       createdBy: userId,
       updatedBy: userId,
     };
 
-    // Create the transfer record
     const transfer = new Transfer(transferData);
     await transfer.save();
 
-    // Update the student's campus and class information
     student.campusId = data.destinationLocationId;
     student.ClassId = data.destinationClass;
     await student.save();
 
     return transfer;
   } catch (error) {
-    console.error("Error creating transfer:", error);
-    throw createError(500, "Error creating transfer: " + error.message);
+    console.error("Error al crear la transferencia:", error);
+    throw createError(500, "Error al crear la transferencia: " + error.message);
   }
 };
 
@@ -95,7 +85,10 @@ const getAllTransfers = async () => {
       "studentId originLocationId destinationLocationId originClass destinationClass"
     );
   } catch (error) {
-    throw createError(500, "Error fetching transfers: " + error.message);
+    throw createError(
+      500,
+      "Error al obtener las transferencias: " + error.message
+    );
   }
 };
 
@@ -105,10 +98,13 @@ const getTransferById = async (id) => {
     const transfer = await Transfer.findById(id).populate(
       "studentId originLocationId destinationLocationId originClass destinationClass"
     );
-    if (!transfer) throw createError(404, "Transfer not found");
+    if (!transfer) throw createError(404, "Transferencia no encontrada");
     return transfer;
   } catch (error) {
-    throw createError(500, "Error fetching transfer: " + error.message);
+    throw createError(
+      500,
+      "Error al obtener la transferencia: " + error.message
+    );
   }
 };
 
@@ -125,13 +121,16 @@ const getTransfersByCampusId = async (campusId) => {
     );
 
     if (!transfers.length)
-      throw createError(404, "No transfers found for this campus");
+      throw createError(
+        404,
+        "No se encontraron transferencias para este campus"
+      );
 
     return transfers;
   } catch (error) {
     throw createError(
       500,
-      "Error fetching transfers by campus: " + error.message
+      "Error al obtener las transferencias por campus: " + error.message
     );
   }
 };
@@ -143,21 +142,13 @@ const updateTransfer = async (id, updateData) => {
       new: true,
       runValidators: true,
     });
-    if (!updatedTransfer) throw createError(404, "Transfer not found");
+    if (!updatedTransfer) throw createError(404, "Transferencia no encontrada");
     return updatedTransfer;
   } catch (error) {
-    throw createError(500, "Error updating transfer: " + error.message);
-  }
-};
-
-// Delete a transfer by ID
-const deleteTransfer = async (id) => {
-  try {
-    const transfer = await Transfer.findByIdAndDelete(id);
-    if (!transfer) throw createError(404, "Transfer not found");
-    return transfer;
-  } catch (error) {
-    throw createError(500, "Error deleting transfer: " + error.message);
+    throw createError(
+      500,
+      "Error al actualizar la transferencia: " + error.message
+    );
   }
 };
 
@@ -167,5 +158,4 @@ module.exports = {
   getTransferById,
   getTransfersByCampusId,
   updateTransfer,
-  deleteTransfer,
 };
