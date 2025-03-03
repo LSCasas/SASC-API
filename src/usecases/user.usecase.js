@@ -107,6 +107,12 @@ const getUserById = async (id) => {
 // Update a user by ID
 const updateUser = async (id, updateData, updatedBy) => {
   try {
+    if (updateData.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(updateData.email)) {
+        throw new Error("El formato del email no es válido.");
+      }
+    }
     const user = await User.findById(id);
     if (!user) throw createError(404, "User not found");
 
