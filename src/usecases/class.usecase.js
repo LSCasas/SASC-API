@@ -7,15 +7,21 @@ const createClass = async (data, campusId, userId) => {
   try {
     if (data.teacherId) {
       const teacher = await Teacher.findById(data.teacherId);
-      if (!teacher) throw createError(404, "Teacher not found");
+      if (!teacher) throw createError(404, "Profesor no encontrado");
 
       if (teacher.campusId.toString() !== campusId.toString()) {
-        throw createError(400, "Teacher cannot teach in a different campus");
+        throw createError(
+          400,
+          "El maestro no puede enseñar en un campus diferente"
+        );
       }
     }
 
     if (data.startTime >= data.endTime) {
-      throw createError(400, "Start time must be earlier than end time");
+      throw createError(
+        400,
+        "La hora de inicio debe ser anterior a la hora de finalización."
+      );
     }
 
     const validDays = [
@@ -29,7 +35,7 @@ const createClass = async (data, campusId, userId) => {
     ];
     const invalidDays = data.days.filter((day) => !validDays.includes(day));
     if (invalidDays.length > 0) {
-      throw createError(400, `Invalid days: ${invalidDays.join(", ")}`);
+      throw createError(400, `Días inválidos: ${invalidDays.join(", ")}`);
     }
 
     const newClass = new Class({
@@ -42,8 +48,8 @@ const createClass = async (data, campusId, userId) => {
     await newClass.save();
     return newClass;
   } catch (error) {
-    console.error("Error creating class:", error);
-    throw createError(500, "Error creating class: " + error.message);
+    console.error("Error al crear la clase:", error);
+    throw createError(500, "Error al crear la clase: " + error.message);
   }
 };
 
@@ -163,7 +169,7 @@ const updateClass = async (id, updateData, userId) => {
 
     return updatedClass;
   } catch (error) {
-    console.error(" Error al actualizar la clas:", error.message);
+    console.error(" Error al actualizar la clase:", error.message);
     throw createError(500, "Error al actualizar la clase: " + error.message);
   }
 };

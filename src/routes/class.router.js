@@ -14,7 +14,7 @@ router.post("/", authMiddleware, async (req, res) => {
   try {
     const { selectedCampusId, userId } = req;
     if (!selectedCampusId) {
-      throw createError(400, "Campus must be selected");
+      throw createError(400, "Debe seleccionar un campus");
     }
 
     const newClass = await createClass(req.body, selectedCampusId, userId);
@@ -23,7 +23,7 @@ router.post("/", authMiddleware, async (req, res) => {
       data: newClass,
     });
   } catch (error) {
-    console.error("Error creating class:", error);
+    console.error("Error al crear la clase:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -40,10 +40,10 @@ router.get("/", authMiddleware, async (req, res) => {
       data: classes,
     });
   } catch (error) {
-    console.error("Error fetching classes:", error);
+    console.error("Error al obtener las clases:", error);
     res.status(500).json({
       success: false,
-      error: "Error fetching classes",
+      error: "Error al obtener las clases",
     });
   }
 });
@@ -58,7 +58,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
       data: classData,
     });
   } catch (error) {
-    console.error("Error fetching class by ID:", error);
+    console.error("Error al obtener la clase por ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -76,7 +76,7 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
       data: classes,
     });
   } catch (error) {
-    console.error("Error fetching classes by campus ID:", error);
+    console.error("Error al obtener las clases por ID del campus:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -97,7 +97,7 @@ router.patch("/:id", authMiddleware, async (req, res) => {
       data: updatedClass,
     });
   } catch (error) {
-    console.error("Error updating class:", error);
+    console.error("Error al actualizar la clase:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
