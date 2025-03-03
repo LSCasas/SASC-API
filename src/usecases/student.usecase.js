@@ -56,8 +56,8 @@ const createStudent = async (data, campusId, userId) => {
 
     return newStudent;
   } catch (error) {
-    console.error("Error creating student:", error);
-    throw createError(500, "Error creating student: " + error.message);
+    console.error("Error al crear el estudiante:", error);
+    throw createError(500, "Error al crear el estudiante: " + error.message);
   }
 };
 
@@ -66,7 +66,10 @@ const getAllStudents = async () => {
   try {
     return await Student.find().populate("tutorId campusId ClassId");
   } catch (error) {
-    throw createError(500, "Error fetching students: " + error.message);
+    throw createError(
+      500,
+      "Error al obtener los estudiantes: " + error.message
+    );
   }
 };
 
@@ -83,10 +86,10 @@ const getStudentById = async (id) => {
         },
       });
 
-    if (!student) throw createError(404, "Student not found");
+    if (!student) throw createError(404, "Estudiante no encontrado");
     return student;
   } catch (error) {
-    throw createError(500, "Error fetching student: " + error.message);
+    throw createError(500, "Error al obtener el estudiante: " + error.message);
   }
 };
 
@@ -104,14 +107,14 @@ const getStudentsByCampusId = async (campusId) => {
       });
 
     if (!students || students.length === 0) {
-      throw createError(404, "No students found for this campus");
+      throw createError(404, "No se encontraron estudiantes para este campus");
     }
 
     return students;
   } catch (error) {
     throw createError(
       500,
-      "Error fetching students by campus: " + error.message
+      "Error al obtener los estudiantes por campus: " + error.message
     );
   }
 };
@@ -128,7 +131,7 @@ const updateStudent = async (id, updateData, userId) => {
         const existingCampus = await Campus.findById(existingStudent.campusId);
         throw createError(
           409,
-          `This student is already registered in the campus: ${existingCampus.name}. You can't update this student with the same CURP.`
+          `Este estudiante ya está registrado en el campus: ${existingCampus.name}. No puedes actualizar a este estudiante con el mismo CURP que otro.`
         );
       }
     }
@@ -174,10 +177,10 @@ const updateStudent = async (id, updateData, userId) => {
       { new: true, runValidators: true }
     );
 
-    if (!updatedStudent) throw createError(404, "Student not found");
+    if (!updatedStudent) throw createError(404, "Estudiante no encontrado");
     return updatedStudent;
   } catch (error) {
-    throw createError(500, "Error updating student: " + error.message);
+    throw createError(500, "Error al actualizar estudiante: " + error.message);
   }
 };
 

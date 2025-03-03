@@ -14,7 +14,7 @@ router.post("/", authMiddleware, async (req, res) => {
   try {
     const { selectedCampusId, userId } = req;
     if (!selectedCampusId) {
-      throw createError(400, "Campus must be selected");
+      throw createError(400, "Debe seleccionarse un campus");
     }
 
     const newStudent = await createStudent(req.body, selectedCampusId, userId);
@@ -23,7 +23,7 @@ router.post("/", authMiddleware, async (req, res) => {
       data: newStudent,
     });
   } catch (error) {
-    console.error("Error creating student:", error);
+    console.error("Error al crear el estudiante:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -40,10 +40,10 @@ router.get("/", authMiddleware, async (req, res) => {
       data: students,
     });
   } catch (error) {
-    console.error("Error fetching students:", error);
+    console.error("Error al obtener los estudiantes:", error);
     res.status(500).json({
       success: false,
-      error: "Error fetching students",
+      error: "Error al obtener los estudiantes",
     });
   }
 });
@@ -58,7 +58,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
       data: student,
     });
   } catch (error) {
-    console.error("Error fetching student by ID:", error);
+    console.error("Error al obtener el estudiante por ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -76,7 +76,7 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
       data: students,
     });
   } catch (error) {
-    console.error("Error fetching students by campus ID:", error);
+    console.error("Error al obtener los estudiantes por ID de campus:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -89,13 +89,13 @@ router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const studentId = req.params.id;
     const userId = req.userId;
-    const updatedStudent = await updateStudent(studentId, req.body, userId); // Pass userId for tracking
+    const updatedStudent = await updateStudent(studentId, req.body, userId); // Pasar userId para seguimiento
     res.json({
       success: true,
       data: updatedStudent,
     });
   } catch (error) {
-    console.error("Error updating student:", error);
+    console.error("Error al actualizar el estudiante:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
