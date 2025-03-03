@@ -6,7 +6,6 @@ const {
   getAllClasses,
   getClassById,
   updateClass,
-  deleteClass,
   getClassesByCampusId,
 } = require("../usecases/class.usecase");
 
@@ -99,24 +98,6 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating class:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-
-// Delete a class by ID
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const classId = req.params.id;
-    await deleteClass(classId);
-    res.json({
-      success: true,
-      message: "Class deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting class:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,

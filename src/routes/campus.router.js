@@ -6,7 +6,6 @@ const {
   getAllCampuses,
   getCampusById,
   updateCampus,
-  deleteCampus,
 } = require("../usecases/campus.usecase");
 
 // Create a new campus
@@ -85,24 +84,6 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating campus:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-
-// Delete a campus by ID
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const campusId = req.params.id;
-    await deleteCampus(campusId);
-    res.json({
-      success: true,
-      message: "Campus deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting campus:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,

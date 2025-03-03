@@ -52,7 +52,7 @@ const getAllClasses = async () => {
   try {
     return await Class.find().populate("teacherId").populate("campusId");
   } catch (error) {
-    throw createError(500, "Error fetching classes: " + error.message);
+    throw createError(500, "Error al obtener las clases: " + error.message);
   }
 };
 
@@ -62,10 +62,10 @@ const getClassById = async (id) => {
     const classData = await Class.findById(id)
       .populate("teacherId")
       .populate("campusId");
-    if (!classData) throw createError(404, "Class not found");
+    if (!classData) throw createError(404, "Clase no encontrada");
     return classData;
   } catch (error) {
-    throw createError(500, "Error fetching class: " + error.message);
+    throw createError(500, "Error al obtener la clase: " + error.message);
   }
 };
 
@@ -76,12 +76,12 @@ const getClassesByCampusId = async (campusId) => {
       .populate("teacherId")
       .populate("campusId");
     if (!classes.length)
-      throw createError(404, "No classes found for this campus");
+      throw createError(404, "No se encontraron clases para este campus");
     return classes;
   } catch (error) {
     throw createError(
       500,
-      "Error fetching classes by campus: " + error.message
+      "Error al obtener las clases por campus: " + error.message
     );
   }
 };
@@ -92,20 +92,26 @@ const updateClass = async (id, updateData, userId) => {
     if (updateData.teacherId) {
       const teacher = await Teacher.findById(updateData.teacherId);
       if (!teacher) {
-        throw createError(404, "Teacher not found");
+        throw createError(404, "Profesor no encontrado");
       }
 
       const { campusId } = teacher;
       const classData = await Class.findById(id);
 
       if (classData && campusId.toString() !== classData.campusId.toString()) {
-        throw createError(400, "Teacher cannot teach in a different campus");
+        throw createError(
+          400,
+          "El profesor no puede enseñar en un campus diferente"
+        );
       }
     }
 
     if (updateData.startTime && updateData.endTime) {
       if (updateData.startTime >= updateData.endTime) {
-        throw createError(400, "Start time must be earlier than end time");
+        throw createError(
+          400,
+          "La hora de inicio debe ser anterior a la hora de finalización"
+        );
       }
     }
 
@@ -128,7 +134,7 @@ const updateClass = async (id, updateData, userId) => {
         (day) => !validDays.includes(day)
       );
       if (invalidDays.length > 0) {
-        throw createError(400, `Invalid days: ${invalidDays.join(", ")}`);
+        throw createError(400, `Días inválidos: ${invalidDays.join(", ")}`);
       }
     }
 
@@ -153,23 +159,12 @@ const updateClass = async (id, updateData, userId) => {
       { new: true, runValidators: true }
     );
 
-    if (!updatedClass) throw createError(404, "Class not found");
+    if (!updatedClass) throw createError(404, "Clase no encontrada");
 
     return updatedClass;
   } catch (error) {
-    console.error(" Error en updateClass:", error.message);
-    throw createError(500, "Error updating class: " + error.message);
-  }
-};
-
-// Eliminar una clase por ID
-const deleteClass = async (id) => {
-  try {
-    const classData = await Class.findByIdAndDelete(id);
-    if (!classData) throw createError(404, "Class not found");
-    return classData;
-  } catch (error) {
-    throw createError(500, "Error deleting class: " + error.message);
+    console.error(" Error al actualizar la clas:", error.message);
+    throw createError(500, "Error al actualizar la clase: " + error.message);
   }
 };
 
@@ -179,5 +174,4 @@ module.exports = {
   getClassById,
   getClassesByCampusId,
   updateClass,
-  deleteClass,
 };
