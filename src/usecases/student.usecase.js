@@ -1,7 +1,7 @@
 const Student = require("../models/student.model");
 const Tutor = require("../models/tutor.model");
 const createError = require("http-errors");
-
+const Campus = require("../models/campus.model");
 // Create a student
 const createStudent = async (data, campusId, userId) => {
   try {
@@ -107,6 +107,17 @@ const updateStudent = async (id, updateData, userId) => {
   try {
     const student = await Student.findById(id);
     if (!student) throw createError(404, "Student not found");
+
+    if (updateData.curp) {
+      const existingStudent = await Student.findOne({ curp: updateData.curp });
+      if (existingStudent && existingStudent._id.toString() !== id) {
+        const existingCampus = await Campus.findById(existingStudent.campusId);
+        throw createError(
+          409,
+          `This student is already registered in the campus: ${existingCampus.name}. You cant update this student with the same curp.`
+        );
+      }
+    }
 
     if (updateData.ClassId && student.ClassId !== updateData.ClassId) {
       if (!student.previousClasses.includes(student.ClassId)) {
