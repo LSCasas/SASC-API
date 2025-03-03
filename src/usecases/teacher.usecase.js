@@ -32,10 +32,10 @@ const getAllTeachers = async () => {
 const getTeacherById = async (id) => {
   try {
     const teacher = await Teacher.findById(id).populate("campusId");
-    if (!teacher) throw createError(404, "Teacher not found");
+    if (!teacher) throw createError(404, "Profesor no encontrado");
     return teacher;
   } catch (error) {
-    throw createError(500, "Error fetching teacher: " + error.message);
+    throw createError(500, "Error al obtener el profesor: " + error.message);
   }
 };
 
@@ -44,12 +44,12 @@ const getTeachersByCampusId = async (campusId) => {
   try {
     const teachers = await Teacher.find({ campusId }).populate("campusId");
     if (!teachers.length)
-      throw createError(404, "No teachers found for this campus");
+      throw createError(404, "No se encontraron profesores para este campus");
     return teachers;
   } catch (error) {
     throw createError(
       500,
-      "Error fetching teachers by campus: " + error.message
+      "Error al obtener los profesores por campus: " + error.message
     );
   }
 };
@@ -61,26 +61,15 @@ const updateTeacher = async (id, updateData, userId) => {
       id,
       {
         ...updateData,
-        updatedBy: userId, // Actualizamos el ID del usuario que hace la modificación
+        updatedBy: userId,
       },
       { new: true, runValidators: true }
     );
-    if (!updatedTeacher) throw createError(404, "Teacher not found");
+    if (!updatedTeacher) throw createError(404, "Profesor no encontrado");
     return updatedTeacher;
   } catch (error) {
-    console.error("Error updating teacher:", error);
-    throw createError(500, "Error updating teacher: " + error.message);
-  }
-};
-
-// Delete a teacher by ID
-const deleteTeacher = async (id) => {
-  try {
-    const teacher = await Teacher.findByIdAndDelete(id);
-    if (!teacher) throw createError(404, "Teacher not found");
-    return teacher;
-  } catch (error) {
-    throw createError(500, "Error deleting teacher: " + error.message);
+    console.error("Error al actualizar el profesor:", error);
+    throw createError(500, "Error al actualizar el profesor: " + error.message);
   }
 };
 
@@ -90,5 +79,4 @@ module.exports = {
   getTeacherById,
   getTeachersByCampusId,
   updateTeacher,
-  deleteTeacher,
 };

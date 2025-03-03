@@ -8,7 +8,6 @@ const {
   getTeacherById,
   getTeachersByCampusId,
   updateTeacher,
-  deleteTeacher,
 } = require("../usecases/teacher.usecase");
 
 // Create a new teacher
@@ -16,7 +15,7 @@ router.post("/", authMiddleware, async (req, res) => {
   try {
     const { selectedCampusId, userId } = req;
     if (!selectedCampusId) {
-      throw createError(400, "Campus must be selected");
+      throw createError(400, "Debe seleccionar un campus");
     }
 
     const newTeacher = await createTeacher(req.body, selectedCampusId, userId);
@@ -25,7 +24,7 @@ router.post("/", authMiddleware, async (req, res) => {
       data: newTeacher,
     });
   } catch (error) {
-    console.error("Error creating teacher:", error);
+    console.error("Error al crear el profesor:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -42,10 +41,10 @@ router.get("/", authMiddleware, async (req, res) => {
       data: teachers,
     });
   } catch (error) {
-    console.error("Error fetching teachers:", error);
+    console.error("Error al obtener los profesores:", error);
     res.status(500).json({
       success: false,
-      error: "Error fetching teachers",
+      error: "Error al obtener los profesores",
     });
   }
 });
@@ -60,7 +59,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
       data: teacher,
     });
   } catch (error) {
-    console.error("Error fetching teacher by ID:", error);
+    console.error("Error al obtener el profesor por ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -78,7 +77,7 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
       data: teachers,
     });
   } catch (error) {
-    console.error("Error fetching teachers by campus ID:", error);
+    console.error("Error al obtener los profesores por ID de campus:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -110,24 +109,7 @@ router.patch("/:id", authMiddleware, async (req, res) => {
       data: updatedTeacher,
     });
   } catch (error) {
-    console.error("Error updating teacher:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-// Delete a teacher by ID
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const teacherId = req.params.id;
-    await deleteTeacher(teacherId);
-    res.json({
-      success: true,
-      message: "Teacher deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting teacher:", error);
+    console.error("Error al actualizar el profesor:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
