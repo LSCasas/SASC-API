@@ -30,7 +30,7 @@ const studentSchema = new mongoose.Schema({
   ],
   medicalConditions: { type: String, default: null },
   specialNeeds: { type: String, default: null },
-  requiredDocuments: { type: String, required: true },
+  requiredDocuments: { type: String, default: null },
   hasInstrument: { type: Boolean, default: false },
   birthDate: { type: Date, required: false },
   createdBy: {
