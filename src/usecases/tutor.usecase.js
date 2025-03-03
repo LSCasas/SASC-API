@@ -67,7 +67,7 @@ const getTutorsByCampusId = async (campusId) => {
   try {
     const tutors = await Tutor.find({ campusId }).populate({
       path: "children",
-      select: "firstName lastName ClassId status", // Asegúrate de que 'status' esté seleccionado
+      select: "firstName lastName ClassId status",
       populate: {
         path: "ClassId",
         select: "name",

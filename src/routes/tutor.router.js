@@ -20,7 +20,7 @@ router.post("/", authMiddleware, async (req, res) => {
       curp,
       phone,
       campusId,
-      children, // Campo opcional
+      children,
     });
     res.status(201).json({
       success: true,

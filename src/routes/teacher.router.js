@@ -14,12 +14,12 @@ const {
 // Create a new teacher
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { selectedCampusId, userId } = req; // Asegúrate de que estas variables estén en el token
+    const { selectedCampusId, userId } = req;
     if (!selectedCampusId) {
       throw createError(400, "Campus must be selected");
     }
 
-    const newTeacher = await createTeacher(req.body, selectedCampusId, userId); // Pasa campusId y userId desde el token
+    const newTeacher = await createTeacher(req.body, selectedCampusId, userId);
     res.status(201).json({
       success: true,
       data: newTeacher,

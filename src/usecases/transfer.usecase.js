@@ -4,12 +4,21 @@ const Class = require("../models/class.model");
 const createError = require("http-errors");
 
 // Create a transfer
+// Create a transfer
 const createTransfer = async (data, userId) => {
   try {
     // Ensure the student exists
     const student = await Student.findById(data.studentId);
     if (!student) {
       throw createError(404, "Student not found");
+    }
+
+    // Ensure the student has no instrument
+    if (student.hasInstrument) {
+      throw createError(
+        400,
+        "Debe devolver el instrumento primero, para poder ser transferido"
+      );
     }
 
     // Ensure the origin and destination locations are different
