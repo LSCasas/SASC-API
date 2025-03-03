@@ -13,7 +13,6 @@ router.post("/login", async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      maxAge: 3600 * 1000,
     });
 
     res.json({
@@ -61,7 +60,6 @@ router.post("/select-campus", authMiddleware, async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      maxAge: 3600 * 1000,
     });
 
     return res.json({
