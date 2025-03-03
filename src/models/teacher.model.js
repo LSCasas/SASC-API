@@ -4,14 +4,7 @@ const teacherSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   phone: { type: String, required: true },
-  email: {
-    type: String,
-    required: true,
-    match: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
-    unique: true,
-    lowercase: true,
-    trim: true,
-  },
+  email: { type: String, required: false },
   campusId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Campus",
