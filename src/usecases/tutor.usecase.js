@@ -115,22 +115,10 @@ const updateTutor = async (id, updateData) => {
   }
 };
 
-// Delete a tutor by ID
-const deleteTutor = async (id) => {
-  try {
-    const tutor = await Tutor.findByIdAndDelete(id);
-    if (!tutor) throw createError(404, "Tutor not found");
-    return tutor;
-  } catch (error) {
-    throw createError(500, "Error deleting tutor: " + error.message);
-  }
-};
-
 module.exports = {
   createTutor,
   getAllTutors,
   getTutorById,
   getTutorsByCampusId,
   updateTutor,
-  deleteTutor,
 };

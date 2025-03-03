@@ -7,7 +7,6 @@ const {
   getTutorById,
   getTutorsByCampusId,
   updateTutor,
-  deleteTutor,
 } = require("../usecases/tutor.usecase");
 
 // Create a new tutor
@@ -106,24 +105,6 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating tutor:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-
-// Delete a tutor by ID
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const tutorId = req.params.id;
-    await deleteTutor(tutorId);
-    res.json({
-      success: true,
-      message: "Tutor deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting tutor:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
