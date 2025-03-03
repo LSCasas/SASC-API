@@ -22,6 +22,10 @@ const createUser = async ({
       throw createError(409, "Email already in use");
     }
 
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw createError(400, "Invalid email format");
+    }
+
     if (!password) {
       throw createError(400, "Password is required");
     }
