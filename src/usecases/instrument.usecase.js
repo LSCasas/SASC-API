@@ -131,28 +131,10 @@ const updateInstrument = async (id, data, userId) => {
   }
 };
 
-// Delete an instrument by ID
-const deleteInstrument = async (id) => {
-  try {
-    const instrument = await Instrument.findByIdAndDelete(id);
-    if (!instrument) throw createError(404, "Instrument not found");
-
-    // Actualizar hasInstrument en el estudiante afectado
-    if (instrument.studentId) {
-      await Student.updateHasInstrument(instrument.studentId);
-    }
-
-    return instrument;
-  } catch (error) {
-    throw createError(500, "Error deleting instrument: " + error.message);
-  }
-};
-
 module.exports = {
   createInstrument,
   getAllInstruments,
   getInstrumentById,
   getInstrumentsByCampusId,
   updateInstrument,
-  deleteInstrument,
 };

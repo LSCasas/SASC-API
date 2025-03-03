@@ -181,22 +181,10 @@ const updateStudent = async (id, updateData, userId) => {
   }
 };
 
-// Delete a student by ID
-const deleteStudent = async (id) => {
-  try {
-    const student = await Student.findByIdAndDelete(id);
-    if (!student) throw createError(404, "Student not found");
-    return student;
-  } catch (error) {
-    throw createError(500, "Error deleting student: " + error.message);
-  }
-};
-
 module.exports = {
   createStudent,
   getAllStudents,
   getStudentById,
   getStudentsByCampusId,
   updateStudent,
-  deleteStudent,
 };

@@ -7,7 +7,6 @@ const {
   getInstrumentById,
   getInstrumentsByCampusId,
   updateInstrument,
-  deleteInstrument,
 } = require("../usecases/instrument.usecase");
 
 // Create a new instrument
@@ -15,7 +14,7 @@ router.post("/", authMiddleware, async (req, res) => {
   try {
     const { selectedCampusId, userId } = req;
     if (!selectedCampusId) {
-      throw createError(400, "Campus must be selected");
+      throw createError(400, "Debe seleccionarse un campus");
     }
 
     const newInstrument = await createInstrument(
@@ -25,7 +24,7 @@ router.post("/", authMiddleware, async (req, res) => {
     );
     res.status(201).json({ success: true, data: newInstrument });
   } catch (error) {
-    console.error("Error creating instrument:", error);
+    console.error("Error al crear el instrumento:", error);
     res
       .status(error.status || 500)
       .json({ success: false, error: error.message });
@@ -41,10 +40,10 @@ router.get("/", authMiddleware, async (req, res) => {
       data: instruments,
     });
   } catch (error) {
-    console.error("Error fetching instruments:", error);
+    console.error("Error al obtener los instrumentos:", error);
     res.status(500).json({
       success: false,
-      error: "Error fetching instruments",
+      error: "Error al obtener los instrumentos",
     });
   }
 });
@@ -59,7 +58,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
       data: instrument,
     });
   } catch (error) {
-    console.error("Error fetching instrument by ID:", error);
+    console.error("Error al obtener el instrumento por ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -77,7 +76,7 @@ router.get("/campus/:campusId", authMiddleware, async (req, res) => {
       data: instruments,
     });
   } catch (error) {
-    console.error("Error fetching instruments by campus ID:", error);
+    console.error("Error al obtener los instrumentos by campus ID:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
@@ -100,38 +99,6 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     res
       .status(error.status || 500)
       .json({ success: false, error: error.message });
-  }
-});
-
-// Delete an instrument by ID
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const instrumentId = req.params.id;
-    await deleteInstrument(instrumentId);
-    res.json({ success: true, message: "Instrument deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting instrument:", error);
-    res
-      .status(error.status || 500)
-      .json({ success: false, error: error.message });
-  }
-});
-
-// Delete an instrument by ID
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const instrumentId = req.params.id;
-    await deleteInstrument(instrumentId);
-    res.json({
-      success: true,
-      message: "Instrument deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting instrument:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
   }
 });
 

@@ -7,7 +7,6 @@ const {
   getStudentById,
   getStudentsByCampusId,
   updateStudent,
-  deleteStudent,
 } = require("../usecases/student.usecase");
 
 // Create a new student
@@ -97,24 +96,6 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating student:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-
-// Delete a student by ID
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const studentId = req.params.id;
-    await deleteStudent(studentId);
-    res.json({
-      success: true,
-      message: "Student deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting student:", error);
     res.status(error.status || 500).json({
       success: false,
       error: error.message,
