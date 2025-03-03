@@ -7,7 +7,6 @@ const {
   getAllUsers,
   getUserById,
   updateUser,
-  deleteUser,
   getCampusesByCoordinator,
 } = require("../usecases/user.usecase");
 
@@ -126,24 +125,6 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     res
       .status(error.status || 500)
       .json({ success: false, error: error.message });
-  }
-});
-
-// Delete a user by ID
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const userId = req.params.id;
-    await deleteUser(userId);
-    res.json({
-      success: true,
-      message: "User deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
   }
 });
 

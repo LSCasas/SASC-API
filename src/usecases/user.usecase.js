@@ -19,15 +19,15 @@ const createUser = async ({
   try {
     const userFound = await User.findOne({ email });
     if (userFound) {
-      throw createError(409, "Email already in use");
+      throw createError(409, "Correo electrónico ya en uso");
     }
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      throw createError(400, "Invalid email format");
+      throw createError(400, "Formato de correo electrónico no válido");
     }
 
     if (!password) {
-      throw createError(400, "Password is required");
+      throw createError(400, "Se requiere contraseña");
     }
 
     password = await encrypt.encrypt(password);
@@ -57,8 +57,8 @@ const createUser = async ({
     await newUser.save();
     return newUser;
   } catch (error) {
-    console.error("Error creating user:", error);
-    throw createError(500, "Error creating user: " + error.message);
+    console.error("Error al crear usuario:", error);
+    throw createError(500, "Error al crear usuario: " + error.message);
   }
 };
 
@@ -66,10 +66,10 @@ const createUser = async ({
 const getCurrentUser = async (userId) => {
   try {
     const user = await User.findById(userId).populate("campusId");
-    if (!user) throw createError(404, "User not found");
+    if (!user) throw createError(404, "Usuario no encontrado");
     return user;
   } catch (error) {
-    throw createError(500, "Error fetching user: " + error.message);
+    throw createError(500, "Error al obtener el usuario: " + error.message);
   }
 };
 
@@ -77,10 +77,10 @@ const getCurrentUser = async (userId) => {
 const getCampusesByCoordinator = async (userId) => {
   try {
     const user = await User.findById(userId).populate("campusId");
-    if (!user) throw createError(404, "User not found");
+    if (!user) throw createError(404, "Usuario no encontrado");
     return user.campusId;
   } catch (error) {
-    throw createError(500, "Error fetching campuses: " + error.message);
+    throw createError(500, "Error al obtener los campus: " + error.message);
   }
 };
 
@@ -89,7 +89,7 @@ const getAllUsers = async () => {
   try {
     return await User.find().populate("campusId");
   } catch (error) {
-    throw createError(500, "Error fetching users: " + error.message);
+    throw createError(500, "Error al obtener los usuarios: " + error.message);
   }
 };
 
@@ -97,10 +97,10 @@ const getAllUsers = async () => {
 const getUserById = async (id) => {
   try {
     const user = await User.findById(id).populate("campusId");
-    if (!user) throw createError(404, "User not found");
+    if (!user) throw createError(404, "Usuario no encontrado");
     return user;
   } catch (error) {
-    throw createError(500, "Error fetching user: " + error.message);
+    throw createError(500, "Error al obtener el usuario: " + error.message);
   }
 };
 
@@ -118,12 +118,12 @@ const updateUser = async (id, updateData, updatedBy) => {
         _id: { $ne: id },
       });
       if (emailExists) {
-        throw createError(409, "Email already in use by another user");
+        throw createError(409, "Correo electrónico ya en uso por otro usuario");
       }
     }
 
     const user = await User.findById(id);
-    if (!user) throw createError(404, "User not found");
+    if (!user) throw createError(404, "Usuario no encontrado");
 
     if (user.role === "admin" && updateData.role === "coordinator") {
       updateData.adminType = null;
@@ -131,7 +131,7 @@ const updateUser = async (id, updateData, updatedBy) => {
 
     if (updateData.role === "admin") {
       const campuses = await Campus.find();
-      updateData.campusId = campuses.map((campus) => campus._id); // Asigna todos los campus
+      updateData.campusId = campuses.map((campus) => campus._id);
     }
 
     if (updateData.isArchived === true) {
@@ -140,7 +140,7 @@ const updateUser = async (id, updateData, updatedBy) => {
 
     if (updateData.campusId) {
       if (!Array.isArray(updateData.campusId)) {
-        throw createError(400, "campusId must be an array");
+        throw createError(400, "campusId debe ser una matriz");
       }
 
       let currentCampuses = user.campusId.map((campus) => campus.toString());
@@ -176,21 +176,10 @@ const updateUser = async (id, updateData, updatedBy) => {
       runValidators: true,
     });
 
-    if (!updatedUser) throw createError(404, "User not found");
+    if (!updatedUser) throw createError(404, "Usuario no encontrado");
     return updatedUser;
   } catch (error) {
-    throw createError(500, "Error updating user: " + error.message);
-  }
-};
-
-// Delete a user by ID
-const deleteUser = async (id) => {
-  try {
-    const user = await User.findByIdAndDelete(id);
-    if (!user) throw createError(404, "User not found");
-    return user;
-  } catch (error) {
-    throw createError(500, "Error deleting user: " + error.message);
+    throw createError(500, "Error al actualizar usuario:" + error.message);
   }
 };
 
@@ -200,6 +189,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   updateUser,
-  deleteUser,
   getCampusesByCoordinator,
 };
