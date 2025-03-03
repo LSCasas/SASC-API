@@ -2,12 +2,26 @@ const Student = require("../models/student.model");
 const Tutor = require("../models/tutor.model");
 const createError = require("http-errors");
 const Campus = require("../models/campus.model");
+
 // Create a student
 const createStudent = async (data, campusId, userId) => {
   try {
-    const studentFound = await Student.findOne({ curp: data.curp });
+    const studentFound = await Student.findOne({ curp: data.curp }).populate(
+      "campusId"
+    );
+
     if (studentFound) {
-      throw createError(409, "CURP already exists");
+      if (studentFound.campusId._id.toString() === campusId) {
+        throw createError(
+          409,
+          "Este estudiante ya está registrado en tu campus."
+        );
+      } else {
+        throw createError(
+          409,
+          `Este estudiante ya está registrado en el campus: ${studentFound.campusId.name}. Debes transferirlo de ese campus para poder registrarlo en tu campus.`
+        );
+      }
     }
 
     let tutorId;
