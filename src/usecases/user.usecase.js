@@ -112,7 +112,16 @@ const updateUser = async (id, updateData, updatedBy) => {
       if (!emailRegex.test(updateData.email)) {
         throw new Error("El formato del email no es válido.");
       }
+
+      const emailExists = await User.findOne({
+        email: updateData.email,
+        _id: { $ne: id },
+      });
+      if (emailExists) {
+        throw createError(409, "Email already in use by another user");
+      }
     }
+
     const user = await User.findById(id);
     if (!user) throw createError(404, "User not found");
 
