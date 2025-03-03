@@ -32,6 +32,7 @@ const studentSchema = new mongoose.Schema({
   specialNeeds: { type: String, default: null },
   requiredDocuments: { type: String, required: true },
   hasInstrument: { type: Boolean, default: false },
+  birthDate: { type: Date, required: false },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
