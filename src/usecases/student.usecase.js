@@ -114,15 +114,19 @@ const updateStudent = async (id, updateData, userId) => {
         const existingCampus = await Campus.findById(existingStudent.campusId);
         throw createError(
           409,
-          `This student is already registered in the campus: ${existingCampus.name}. You cant update this student with the same curp.`
+          `This student is already registered in the campus: ${existingCampus.name}. You can't update this student with the same CURP.`
         );
       }
     }
 
-    if (updateData.ClassId && student.ClassId !== updateData.ClassId) {
-      if (!student.previousClasses.includes(student.ClassId)) {
-        student.previousClasses.push(student.ClassId);
-        await student.save();
+    const newClassId = String(updateData.ClassId || "");
+    const currentClassId = String(student.ClassId || "");
+
+    let updatedPreviousClasses = [...student.previousClasses];
+
+    if (newClassId && newClassId !== currentClassId) {
+      if (currentClassId && !updatedPreviousClasses.includes(currentClassId)) {
+        updatedPreviousClasses.push(currentClassId);
       }
     }
 
@@ -146,6 +150,11 @@ const updateStudent = async (id, updateData, userId) => {
       id,
       {
         ...updateData,
+        ClassId: newClassId,
+        previousClasses:
+          updatedPreviousClasses.length > 0
+            ? updatedPreviousClasses
+            : student.previousClasses,
         updatedBy: userId,
       },
       { new: true, runValidators: true }
