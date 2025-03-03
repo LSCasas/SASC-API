@@ -2,7 +2,7 @@ const Class = require("../models/class.model");
 const Teacher = require("../models/teacher.model");
 const createError = require("http-errors");
 
-// Crear una nueva clase
+// Create a new class
 const createClass = async (data, campusId, userId) => {
   try {
     if (data.teacherId) {
@@ -53,7 +53,7 @@ const createClass = async (data, campusId, userId) => {
   }
 };
 
-// Obtener todas las clases
+// Get all classes
 const getAllClasses = async () => {
   try {
     return await Class.find().populate("teacherId").populate("campusId");
@@ -62,7 +62,7 @@ const getAllClasses = async () => {
   }
 };
 
-// Obtener una clase por ID
+// Get a class by ID
 const getClassById = async (id) => {
   try {
     const classData = await Class.findById(id)
@@ -75,7 +75,7 @@ const getClassById = async (id) => {
   }
 };
 
-// Obtener clases por campus ID
+// Get classes by campus ID
 const getClassesByCampusId = async (campusId) => {
   try {
     const classes = await Class.find({ campusId })
@@ -92,7 +92,7 @@ const getClassesByCampusId = async (campusId) => {
   }
 };
 
-// Actualizar una clase por ID
+// Update a class by ID
 const updateClass = async (id, updateData, userId) => {
   try {
     if (updateData.teacherId) {
