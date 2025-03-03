@@ -26,8 +26,8 @@ const createCampus = async ({ name, address, contactPhone }, userId) => {
 
     return newCampus;
   } catch (error) {
-    console.error("Error creating campus:", error);
-    throw createError(500, "Error creating campus: " + error.message);
+    console.error("Error al crear el campus:", error);
+    throw createError(500, "Error al crear el campus: " + error.message);
   }
 };
 
@@ -36,7 +36,7 @@ const getAllCampuses = async () => {
   try {
     return await Campus.find();
   } catch (error) {
-    throw createError(500, "Error fetching campuses: " + error.message);
+    throw createError(500, "Error al obtener los campus: " + error.message);
   }
 };
 
@@ -44,10 +44,10 @@ const getAllCampuses = async () => {
 const getCampusById = async (id) => {
   try {
     const campus = await Campus.findById(id);
-    if (!campus) throw createError(404, "Campus not found");
+    if (!campus) throw createError(404, "Campus no encontrado");
     return campus;
   } catch (error) {
-    throw createError(500, "Error fetching campus: " + error.message);
+    throw createError(500, "Error al obtener los campus: " + error.message);
   }
 };
 
@@ -66,21 +66,10 @@ const updateCampus = async (id, updateData, userId) => {
       }
     );
 
-    if (!updatedCampus) throw createError(404, "Campus not found");
+    if (!updatedCampus) throw createError(404, "Campus no encontrado");
     return updatedCampus;
   } catch (error) {
-    throw createError(500, "Error updating campus: " + error.message);
-  }
-};
-
-// Delete a campus by ID
-const deleteCampus = async (id) => {
-  try {
-    const campus = await Campus.findByIdAndDelete(id);
-    if (!campus) throw createError(404, "Campus not found");
-    return campus;
-  } catch (error) {
-    throw createError(500, "Error deleting campus: " + error.message);
+    throw createError(500, "Error al actualizar el campus: " + error.message);
   }
 };
 
@@ -89,5 +78,4 @@ module.exports = {
   getAllCampuses,
   getCampusById,
   updateCampus,
-  deleteCampus,
 };

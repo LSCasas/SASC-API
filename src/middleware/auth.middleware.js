@@ -7,7 +7,7 @@ async function auth(req, res, next) {
     const token = req.cookies.token;
 
     if (!token) {
-      throw createError(401, "JWT is required");
+      throw createError(401, "Debes iniciar sesión primero.");
     }
 
     const payload = jwt.verify(token);
