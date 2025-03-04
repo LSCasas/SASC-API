@@ -20,7 +20,7 @@ const createClass = async (data, campusId, userId) => {
     if (data.startTime >= data.endTime) {
       throw createError(
         400,
-        "La hora de inicio debe ser anterior a la hora de finalización."
+        "La hora de inicio debe ser menor a la hora de finalización."
       );
     }
 
