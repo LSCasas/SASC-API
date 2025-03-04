@@ -169,6 +169,7 @@ const updateStudent = async (id, updateData, userId) => {
             ? updatedPreviousClasses
             : student.previousClasses,
         updatedBy: userId,
+        updatedAt: new Date(),
       },
       { new: true, runValidators: true }
     );
