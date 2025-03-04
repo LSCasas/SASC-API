@@ -15,8 +15,8 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000", // Permite solo el frontend
-    credentials: true, // Permite cookies y headers con credenciales
+    origin: ["https://sasc5.vercel.app", "http://localhost:3000"],
+    credentials: true,
   })
 );
 app.use(express.json());

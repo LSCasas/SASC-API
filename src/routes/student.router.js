@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const createError = require("http-errors");
 const authMiddleware = require("../middleware/auth.middleware");
 const {
   createStudent,
@@ -12,7 +13,7 @@ const {
 // Create a new student
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { selectedCampusId, userId } = req;
+    const { selectedCampusId, userId } = req; // Verifica que selectedCampusId esté presente en req
     if (!selectedCampusId) {
       throw createError(400, "Debe seleccionarse un campus");
     }
