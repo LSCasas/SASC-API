@@ -15,7 +15,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["https://sasc5.vercel.app", "http://localhost:3000"],
+    origin: ["https://sasc-tultepec.vercel.app", "http://localhost:3000"],
     credentials: true,
   })
 );
