@@ -81,8 +81,6 @@ const getClassesByCampusId = async (campusId) => {
     const classes = await Class.find({ campusId })
       .populate("teacherId")
       .populate("campusId");
-    if (!classes.length)
-      throw createError(404, "No se encontraron clases para este campus");
     return classes;
   } catch (error) {
     throw createError(

@@ -120,12 +120,6 @@ const getTransfersByCampusId = async (campusId) => {
       "studentId originLocationId destinationLocationId originClass destinationClass"
     );
 
-    if (!transfers.length)
-      throw createError(
-        404,
-        "No se encontraron transferencias para este campus"
-      );
-
     return transfers;
   } catch (error) {
     throw createError(

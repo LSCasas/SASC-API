@@ -75,10 +75,6 @@ const getTutorsByCampusId = async (campusId) => {
       },
     });
 
-    if (!tutors.length) {
-      throw createError(404, "No tutors found for this campus");
-    }
-
     for (let tutor of tutors) {
       const students = await Student.find({ _id: { $in: tutor.children } });
 

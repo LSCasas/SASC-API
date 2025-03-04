@@ -106,10 +106,6 @@ const getStudentsByCampusId = async (campusId) => {
         },
       });
 
-    if (!students || students.length === 0) {
-      throw createError(404, "No se encontraron estudiantes para este campus");
-    }
-
     return students;
   } catch (error) {
     throw createError(

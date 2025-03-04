@@ -78,8 +78,6 @@ const getInstrumentsByCampusId = async (campusId) => {
     const instruments = await Instrument.find({ campusId }).populate(
       "studentId tutorId campusId"
     );
-    if (!instruments.length)
-      throw createError(404, "No se encontraron instrumentos para este campus");
     return instruments;
   } catch (error) {
     throw createError(

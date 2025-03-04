@@ -43,8 +43,6 @@ const getTeacherById = async (id) => {
 const getTeachersByCampusId = async (campusId) => {
   try {
     const teachers = await Teacher.find({ campusId }).populate("campusId");
-    if (!teachers.length)
-      throw createError(404, "No se encontraron profesores para este campus");
     return teachers;
   } catch (error) {
     throw createError(
