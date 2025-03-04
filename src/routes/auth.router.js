@@ -58,8 +58,8 @@ router.post("/select-campus", authMiddleware, async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      secure: true,
+      sameSite: "none",
     });
 
     return res.json({
@@ -78,8 +78,8 @@ router.post("/select-campus", authMiddleware, async (req, res) => {
 router.post("/logout", (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "Strict",
+    secure: true,
+    sameSite: "none",
     expires: new Date(0),
   });
 
