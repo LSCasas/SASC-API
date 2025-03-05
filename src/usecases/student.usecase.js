@@ -24,26 +24,18 @@ const createStudent = async (data, campusId, userId) => {
       }
     }
 
-    let tutorId;
-
-    let tutor = await Tutor.findOne({ curp: data.tutorCurp });
-
-    if (!tutor) {
-      tutor = new Tutor({
-        name: data.tutorName,
-        lastname: data.tutorLastname,
-        curp: data.tutorCurp,
-        phone: data.tutorPhone,
-        campusId: campusId,
-      });
-      await tutor.save();
-    }
-
-    tutorId = tutor._id;
+    // Crear un nuevo tutor directamente
+    const tutor = new Tutor({
+      name: data.tutorName,
+      lastname: data.tutorLastname,
+      phone: data.tutorPhone,
+      campusId: campusId,
+    });
+    await tutor.save();
 
     const newStudent = new Student({
       ...data,
-      tutorId,
+      tutorId: tutor._id,
       campusId: campusId,
       createdBy: userId,
       updatedBy: userId,

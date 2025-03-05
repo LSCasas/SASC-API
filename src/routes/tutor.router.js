@@ -12,25 +12,20 @@ const {
 // Create a new tutor
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { name, lastname, curp, phone, campusId, children } = req.body;
+    const { name, lastname, phone, campusId, children } = req.body;
     const newTutor = await createTutor({
       name,
       lastname,
-      curp,
       phone,
       campusId,
       children,
     });
-    res.status(201).json({
-      success: true,
-      data: newTutor,
-    });
+    res.status(201).json({ success: true, data: newTutor });
   } catch (error) {
     console.error("Error creating tutor:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
+    res
+      .status(error.status || 500)
+      .json({ success: false, error: error.message });
   }
 });
 
@@ -38,77 +33,55 @@ router.post("/", authMiddleware, async (req, res) => {
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const tutors = await getAllTutors();
-    res.json({
-      success: true,
-      data: tutors,
-    });
+    res.json({ success: true, data: tutors });
   } catch (error) {
     console.error("Error fetching tutors:", error);
-    res.status(500).json({
-      success: false,
-      error: "Error fetching tutors",
-    });
+    res.status(500).json({ success: false, error: "Error fetching tutors" });
   }
 });
 
 // Get a tutor by ID
 router.get("/:id", authMiddleware, async (req, res) => {
   try {
-    const tutorId = req.params.id;
-    const tutor = await getTutorById(tutorId);
-    res.json({
-      success: true,
-      data: tutor,
-    });
+    const tutor = await getTutorById(req.params.id);
+    res.json({ success: true, data: tutor });
   } catch (error) {
     console.error("Error fetching tutor by ID:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
+    res
+      .status(error.status || 500)
+      .json({ success: false, error: error.message });
   }
 });
 
 // Get tutors by campus ID
 router.get("/campus/:campusId", authMiddleware, async (req, res) => {
   try {
-    const campusId = req.params.campusId;
-    const tutors = await getTutorsByCampusId(campusId);
-    res.json({
-      success: true,
-      data: tutors,
-    });
+    const tutors = await getTutorsByCampusId(req.params.campusId);
+    res.json({ success: true, data: tutors });
   } catch (error) {
     console.error("Error fetching tutors by campus ID:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
+    res
+      .status(error.status || 500)
+      .json({ success: false, error: error.message });
   }
 });
 
 // Update a tutor by ID
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
-    const tutorId = req.params.id;
-    const { name, lastname, curp, phone, campusId } = req.body;
-    const updatedTutor = await updateTutor(tutorId, {
+    const { name, lastname, phone, campusId } = req.body;
+    const updatedTutor = await updateTutor(req.params.id, {
       name,
       lastname,
-      curp,
       phone,
       campusId,
     });
-    res.json({
-      success: true,
-      data: updatedTutor,
-    });
+    res.json({ success: true, data: updatedTutor });
   } catch (error) {
     console.error("Error updating tutor:", error);
-    res.status(error.status || 500).json({
-      success: false,
-      error: error.message,
-    });
+    res
+      .status(error.status || 500)
+      .json({ success: false, error: error.message });
   }
 });
 

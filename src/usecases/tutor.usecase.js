@@ -3,28 +3,9 @@ const createError = require("http-errors");
 const Student = require("../models/student.model");
 
 // Create a tutor
-const createTutor = async ({
-  name,
-  lastname,
-  curp,
-  phone,
-  campusId,
-  children,
-}) => {
+const createTutor = async ({ name, lastname, phone, campusId, children }) => {
   try {
-    const tutorFound = await Tutor.findOne({ curp });
-    if (tutorFound) {
-      throw createError(409, "CURP already in use");
-    }
-
-    const newTutor = new Tutor({
-      name,
-      lastname,
-      curp,
-      phone,
-      campusId,
-      children,
-    });
+    const newTutor = new Tutor({ name, lastname, phone, campusId, children });
     await newTutor.save();
     return newTutor;
   } catch (error) {
@@ -48,11 +29,7 @@ const getTutorById = async (id) => {
     const tutor = await Tutor.findById(id).populate({
       path: "children",
       select: "firstName lastName ClassId",
-      populate: {
-        path: "ClassId",
-        select: "name",
-        model: "Class",
-      },
+      populate: { path: "ClassId", select: "name", model: "Class" },
     });
 
     if (!tutor) throw createError(404, "Tutor not found");
@@ -62,31 +39,21 @@ const getTutorById = async (id) => {
   }
 };
 
-// Obtener los tutores por ID de campus
+// Get tutors by campus ID
 const getTutorsByCampusId = async (campusId) => {
   try {
     const tutors = await Tutor.find({ campusId }).populate({
       path: "children",
       select: "firstName lastName ClassId status",
-      populate: {
-        path: "ClassId",
-        select: "name",
-        model: "Class",
-      },
+      populate: { path: "ClassId", select: "name", model: "Class" },
     });
 
     for (let tutor of tutors) {
       const students = await Student.find({ _id: { $in: tutor.children } });
 
-      const allInactive = students.every(
+      tutor.isArchive = students.every(
         (student) => student.status !== "activo"
       );
-
-      if (allInactive) {
-        tutor.isArchive = true;
-      } else {
-        tutor.isArchive = false;
-      }
 
       await tutor.save();
     }
