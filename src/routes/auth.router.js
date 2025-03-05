@@ -75,18 +75,31 @@ router.post("/select-campus", authMiddleware, async (req, res) => {
   }
 });
 
-router.post("/logout", (req, res) => {
-  res.cookie("token", "", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    expires: new Date(0),
-  });
+router.post("/logout", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
 
-  res.json({
-    success: true,
-    message: "Sesión cerrada correctamente",
-  });
+    const user = await userUseCase.getUserById(userId);
+    user.selectedCampusId = null;
+    await user.save();
+
+    res.cookie("token", "", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    res.json({
+      success: true,
+      message: "Sesión cerrada correctamente y campus desasignado",
+    });
+  } catch (error) {
+    console.error("Error en logout:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor en logout",
+    });
+  }
 });
 
 module.exports = router;
