@@ -26,6 +26,11 @@ const transferSchema = new mongoose.Schema({
     ref: "Class",
     required: true,
   },
+  tutorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Tutor",
+    required: true,
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

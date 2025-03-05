@@ -2,8 +2,8 @@ const Transfer = require("../models/transfer.model");
 const Student = require("../models/student.model");
 const Class = require("../models/class.model");
 const createError = require("http-errors");
+const Tutor = require("../models/tutor.model");
 
-// Create a transfer
 // Create a transfer
 const createTransfer = async (data, userId) => {
   try {
@@ -58,10 +58,19 @@ const createTransfer = async (data, userId) => {
       );
     }
 
+    const tutor = await Tutor.findById(student.tutorId);
+    if (!tutor) {
+      throw createError(404, "Tutor no encontrado");
+    }
+
+    tutor.campusId = data.destinationLocationId;
+    await tutor.save();
+
     const transferData = {
       ...data,
       createdBy: userId,
       updatedBy: userId,
+      tutorId: student.tutorId,
     };
 
     const transfer = new Transfer(transferData);
