@@ -9,6 +9,13 @@ const createInstrument = async (data, userId, campusId) => {
       throw createError(400, "Se requiere identificación interna");
     }
 
+    const existingInstrumentById = await Instrument.findOne({
+      internalId: data.internalId,
+    });
+    if (existingInstrumentById) {
+      throw createError(409, "Ya existe un instrumento con ese ID");
+    }
+
     if (data.studentId) {
       const student = await Student.findById(data.studentId);
       if (!student) throw createError(404, "Estudiante no encontrado");
