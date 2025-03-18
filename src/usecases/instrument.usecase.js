@@ -28,7 +28,7 @@ const createInstrument = async (data, userId, campusId) => {
       if (existingInstrument) {
         throw createError(
           409,
-          "El estudiante ya tiene un instrumento asignado"
+          "El estudiante ya tiene un instrumento asignado. Para asignarle otro, primero debes desasignar el instrumento actual."
         );
       }
     }
