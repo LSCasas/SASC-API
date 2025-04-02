@@ -17,13 +17,6 @@ const createClass = async (data, campusId, userId) => {
       }
     }
 
-    if (data.startTime >= data.endTime) {
-      throw createError(
-        400,
-        "La hora de inicio debe ser menor a la hora de finalización."
-      );
-    }
-
     const validDays = [
       "Lunes",
       "Martes",
@@ -33,9 +26,24 @@ const createClass = async (data, campusId, userId) => {
       "Sabado",
       "Domingo",
     ];
-    const invalidDays = data.days.filter((day) => !validDays.includes(day));
-    if (invalidDays.length > 0) {
-      throw createError(400, `Días inválidos: ${invalidDays.join(", ")}`);
+
+    if (!data.schedule || typeof data.schedule !== "object") {
+      throw createError(400, "El horario debe ser un objeto válido.");
+    }
+
+    for (const [day, times] of Object.entries(data.schedule)) {
+      if (!validDays.includes(day)) {
+        throw createError(400, `Día inválido: ${day}`);
+      }
+      if (!times.startTime || !times.endTime) {
+        throw createError(400, `Falta horario en ${day}`);
+      }
+      if (times.startTime >= times.endTime) {
+        throw createError(
+          400,
+          `La hora de inicio debe ser menor a la de finalización en ${day}`
+        );
+      }
     }
 
     const newClass = new Class({
@@ -95,14 +103,13 @@ const updateClass = async (id, updateData, userId) => {
   try {
     if (updateData.teacherId) {
       const teacher = await Teacher.findById(updateData.teacherId);
-      if (!teacher) {
-        throw createError(404, "Profesor no encontrado");
-      }
+      if (!teacher) throw createError(404, "Profesor no encontrado");
 
-      const { campusId } = teacher;
       const classData = await Class.findById(id);
-
-      if (classData && campusId.toString() !== classData.campusId.toString()) {
+      if (
+        classData &&
+        teacher.campusId.toString() !== classData.campusId.toString()
+      ) {
         throw createError(
           400,
           "El profesor no puede enseñar en un campus diferente"
@@ -110,35 +117,30 @@ const updateClass = async (id, updateData, userId) => {
       }
     }
 
-    if (updateData.startTime && updateData.endTime) {
-      if (updateData.startTime >= updateData.endTime) {
-        throw createError(
-          400,
-          "La hora de inicio debe ser anterior a la hora de finalización"
-        );
-      }
-    }
+    if (updateData.schedule) {
+      const validDays = [
+        "Lunes",
+        "Martes",
+        "Miercoles",
+        "Jueves",
+        "Viernes",
+        "Sabado",
+        "Domingo",
+      ];
 
-    const validDays = [
-      "Lunes",
-      "Martes",
-      "Miercoles",
-      "Jueves",
-      "Viernes",
-      "Sabado",
-      "Domingo",
-    ];
-
-    if (updateData.days && Array.isArray(updateData.days)) {
-      updateData.days = updateData.days.map(
-        (day) => day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()
-      );
-
-      const invalidDays = updateData.days.filter(
-        (day) => !validDays.includes(day)
-      );
-      if (invalidDays.length > 0) {
-        throw createError(400, `Días inválidos: ${invalidDays.join(", ")}`);
+      for (const [day, times] of Object.entries(updateData.schedule)) {
+        if (!validDays.includes(day)) {
+          throw createError(400, `Día inválido: ${day}`);
+        }
+        if (!times.startTime || !times.endTime) {
+          throw createError(400, `Falta horario en ${day}`);
+        }
+        if (times.startTime >= times.endTime) {
+          throw createError(
+            400,
+            `La hora de inicio debe ser menor a la de finalización en ${day}`
+          );
+        }
       }
     }
 
@@ -151,9 +153,7 @@ const updateClass = async (id, updateData, userId) => {
     if (updateData.teacherId !== undefined)
       updateFields.teacherId = updateData.teacherId;
     if (updateData.generation) updateFields.generation = updateData.generation;
-    if (updateData.days) updateFields.days = updateData.days;
-    if (updateData.startTime) updateFields.startTime = updateData.startTime;
-    if (updateData.endTime) updateFields.endTime = updateData.endTime;
+    if (updateData.schedule) updateFields.schedule = updateData.schedule;
     if (updateData.isAchive !== undefined)
       updateFields.isAchive = updateData.isAchive;
 
@@ -167,7 +167,7 @@ const updateClass = async (id, updateData, userId) => {
 
     return updatedClass;
   } catch (error) {
-    console.error(" Error al actualizar la clase:", error.message);
+    console.error("Error al actualizar la clase:", error);
     throw createError(500, "Error al actualizar la clase: " + error.message);
   }
 };
