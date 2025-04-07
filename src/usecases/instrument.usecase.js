@@ -13,7 +13,7 @@ const createInstrument = async (data, userId, campusId) => {
       internalId: data.internalId,
     });
     if (existingInstrumentById) {
-      throw createError(409, "Ya existe un instrumento con ese ID");
+      throw createError(409, "Ya existe un instrumento con ese Folio");
     }
 
     if (data.studentId) {
@@ -98,7 +98,7 @@ const getInstrumentsByCampusId = async (campusId) => {
 const updateInstrument = async (id, data, userId) => {
   try {
     const instrument = await Instrument.findById(id);
-    if (!instrument) throw createError(404, "Instrument not found");
+    if (!instrument) throw createError(404, "Instrumento no encontrado");
 
     if (data.studentId) {
       const student = await Student.findById(data.studentId);
@@ -112,11 +112,11 @@ const updateInstrument = async (id, data, userId) => {
       });
 
       if (existingInstrument) {
-        throw createError(409, "Student already has an assigned instrument");
+        throw createError(
+          409,
+          "El estudiante ya tiene un instrumento asignado. Para asignarle otro, primero debes desasignar el instrumento actual."
+        );
       }
-    } else {
-      // Si studentId es null, también se debe limpiar tutorId
-      data.tutorId = null;
     }
 
     const updatedInstrument = await Instrument.findByIdAndUpdate(
@@ -125,7 +125,6 @@ const updateInstrument = async (id, data, userId) => {
       { new: true, runValidators: true }
     );
 
-    // Actualiza hasInstrument en los estudiantes involucrados solo si no son nulos
     await Promise.all([
       instrument.studentId
         ? Student.updateHasInstrument(instrument.studentId)
@@ -137,8 +136,11 @@ const updateInstrument = async (id, data, userId) => {
 
     return updatedInstrument;
   } catch (error) {
-    console.error("Error updating instrument:", error);
-    throw createError(500, "Error updating instrument: " + error.message);
+    console.error("Error actualizando el instrumento:", error);
+    throw createError(
+      500,
+      "Error actualizando el instrumento: " + error.message
+    );
   }
 };
 

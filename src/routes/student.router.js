@@ -13,7 +13,7 @@ const {
 // Create a new student
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { selectedCampusId, userId } = req; // Verifica que selectedCampusId esté presente en req
+    const { selectedCampusId, userId } = req;
     if (!selectedCampusId) {
       throw createError(400, "Debe seleccionarse un campus");
     }

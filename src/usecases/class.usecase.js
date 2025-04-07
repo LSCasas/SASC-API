@@ -28,7 +28,7 @@ const createClass = async (data, campusId, userId) => {
     ];
 
     if (!data.schedule || typeof data.schedule !== "object") {
-      throw createError(400, "El horario debe ser un objeto válido.");
+      throw createError(400, "El horario debe ser un horario válido.");
     }
 
     for (const [day, times] of Object.entries(data.schedule)) {
